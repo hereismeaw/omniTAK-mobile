@@ -13,7 +13,7 @@ valdi_application(
     android_activity_theme_name = "Theme.OmniTAK.Launch",
     android_app_icon_name = "app_icon",
     android_resource_files = glob(["app_assets/android/**"]),
-    android_package_name = "com.engindearing.omnitak",
+    android_package = "com.engindearing.omnitak",
 
     # iOS Configuration (for potential future iOS build from this target)
     # Currently, iOS builds from apps/omnitak_ios_test/
@@ -37,7 +37,4 @@ valdi_application(
         # App-specific sources
         "//apps/omnitak_android/src/valdi/omnitak_app",
     ],
-
-    # Visibility
-    visibility = ["//visibility:public"],
 )
