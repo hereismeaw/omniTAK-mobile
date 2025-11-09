@@ -17,6 +17,12 @@ struct ATAKMapView: View {
     @State private var trackingMode: MapUserTrackingMode = .follow
     @State private var orientation = UIDeviceOrientation.unknown
 
+    // Layer states
+    @State private var activeMapLayer = "satellite"
+    @State private var showFriendly = true
+    @State private var showHostile = true
+    @State private var showUnknown = false
+
     // Detect device orientation
     @Environment(\.verticalSizeClass) var verticalSizeClass
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
@@ -25,10 +31,10 @@ struct ATAKMapView: View {
         horizontalSizeClass == .regular || verticalSizeClass == .compact
     }
 
-    // Computed CoT markers from TAK service
+    // Computed CoT markers from TAK service - filtered by overlay settings
     private var cotMarkers: [CoTMarker] {
-        takService.cotEvents.map { event in
-            CoTMarker(
+        takService.cotEvents.compactMap { event in
+            let marker = CoTMarker(
                 uid: event.uid,
                 coordinate: CLLocationCoordinate2D(
                     latitude: event.point.lat,
@@ -38,20 +44,32 @@ struct ATAKMapView: View {
                 callsign: event.detail.callsign,
                 team: event.detail.team ?? "Unknown"
             )
+
+            // Filter based on overlay settings
+            if event.type.contains("a-f") && !showFriendly {
+                return nil  // Hide friendly
+            }
+            if event.type.contains("a-h") && !showHostile {
+                return nil  // Hide hostile
+            }
+            if event.type.contains("a-u") && !showUnknown {
+                return nil  // Hide unknown
+            }
+
+            return marker
         }
     }
 
     var body: some View {
         ZStack {
-            // Main Map View
-            Map(coordinateRegion: $mapRegion,
-                showsUserLocation: true,
-                userTrackingMode: $trackingMode,
-                annotationItems: cotMarkers) { marker in
-                MapAnnotation(coordinate: marker.coordinate) {
-                    CoTMarkerView(marker: marker)
-                }
-            }
+            // Main Map View - Using UIViewRepresentable for mapType support
+            TacticalMapView(
+                region: $mapRegion,
+                mapType: $mapType,
+                trackingMode: $trackingMode,
+                markers: cotMarkers,
+                showsUserLocation: true
+            )
             .ignoresSafeArea()
 
             // Top Status Bar (ATAK-style)
@@ -62,6 +80,7 @@ struct ATAKMapView: View {
                     messagesReceived: takService.messagesReceived,
                     messagesSent: takService.messagesSent,
                     gpsAccuracy: locationManager.accuracy,
+                    serverName: ServerManager.shared.activeServer?.name,
                     onServerTap: { showServerConfig = true }
                 )
                 .background(Color.black.opacity(0.7))
@@ -91,8 +110,15 @@ struct ATAKMapView: View {
                 HStack {
                     ATAKSidePanel(
                         isExpanded: $showLayersPanel,
+                        activeMapLayer: $activeMapLayer,
+                        showFriendly: $showFriendly,
+                        showHostile: $showHostile,
+                        showUnknown: $showUnknown,
                         onLayerToggle: { layer in
                             toggleLayer(layer)
+                        },
+                        onOverlayToggle: { overlay in
+                            toggleOverlay(overlay)
                         }
                     )
                     .background(Color.black.opacity(0.9))
@@ -117,14 +143,17 @@ struct ATAKMapView: View {
     // MARK: - Actions
 
     private func setupTAKConnection() {
-        // Auto-connect to default server
-        takService.connect(
-            host: "204.48.30.216",
-            port: 8087,
-            protocolType: "tcp",
-            useTLS: false
-        )
-
+        // Auto-connect to active server from ServerManager
+        let serverManager = ServerManager.shared
+        if let activeServer = serverManager.activeServer {
+            takService.connect(
+                host: activeServer.host,
+                port: activeServer.port,
+                protocolType: activeServer.protocolType,
+                useTLS: activeServer.useTLS
+            )
+            print("🔌 Auto-connecting to: \(activeServer.displayName)")
+        }
     }
 
     private func startLocationUpdates() {
@@ -174,17 +203,47 @@ struct ATAKMapView: View {
     }
 
     private func toggleLayer(_ layer: String) {
+        // Haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+
+        // Update active layer
+        activeMapLayer = layer
+
         // Toggle map layers
-        switch layer {
-        case "satellite":
-            mapType = .satellite
-            print("🗺️ Map type: Satellite")
-        case "hybrid":
-            mapType = .hybrid
-            print("🗺️ Map type: Hybrid")
-        case "standard":
-            mapType = .standard
-            print("🗺️ Map type: Standard")
+        withAnimation(.easeInOut(duration: 0.3)) {
+            switch layer {
+            case "satellite":
+                mapType = .satellite
+                print("🗺️ Map type: Satellite")
+            case "hybrid":
+                mapType = .hybrid
+                print("🗺️ Map type: Hybrid")
+            case "standard":
+                mapType = .standard
+                print("🗺️ Map type: Standard")
+            default:
+                break
+            }
+        }
+    }
+
+    private func toggleOverlay(_ overlay: String) {
+        // Haptic feedback
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+
+        // Toggle overlay visibility
+        switch overlay {
+        case "friendly":
+            showFriendly.toggle()
+            print("👥 Friendly units: \(showFriendly ? "ON" : "OFF")")
+        case "hostile":
+            showHostile.toggle()
+            print("⚠️ Hostile units: \(showHostile ? "ON" : "OFF")")
+        case "unknown":
+            showUnknown.toggle()
+            print("❓ Unknown units: \(showUnknown ? "ON" : "OFF")")
         default:
             break
         }
@@ -218,19 +277,21 @@ struct ATAKStatusBar: View {
     let messagesReceived: Int
     let messagesSent: Int
     let gpsAccuracy: Double
+    let serverName: String?
     let onServerTap: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
-            // Connection Status
+            // Connection Status with Server Name
             Button(action: onServerTap) {
                 HStack(spacing: 4) {
                     Circle()
                         .fill(isConnected ? Color.green : Color.red)
                         .frame(width: 8, height: 8)
-                    Text(isConnected ? "TAK" : "DISC")
+                    Text(serverName ?? (isConnected ? "TAK" : "DISC"))
                         .font(.system(size: 11, weight: .bold))
                         .foregroundColor(isConnected ? .green : .red)
+                        .lineLimit(1)
                 }
             }
 
@@ -370,7 +431,12 @@ struct ToolButton: View {
 
 struct ATAKSidePanel: View {
     @Binding var isExpanded: Bool
+    @Binding var activeMapLayer: String
+    @Binding var showFriendly: Bool
+    @Binding var showHostile: Bool
+    @Binding var showUnknown: Bool
     let onLayerToggle: (String) -> Void
+    let onOverlayToggle: (String) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -381,7 +447,11 @@ struct ATAKSidePanel: View {
                         .font(.system(size: 10, weight: .bold))
                         .foregroundColor(.white)
                     Spacer()
-                    Button(action: { isExpanded = false }) {
+                    Button(action: {
+                        withAnimation(.spring()) {
+                            isExpanded = false
+                        }
+                    }) {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.white.opacity(0.7))
                             .font(.system(size: 16))
@@ -390,13 +460,13 @@ struct ATAKSidePanel: View {
                 .padding(.horizontal, 10)
                 .padding(.top, 8)
 
-                LayerButton(icon: "map", title: "Satellite", isActive: true, compact: true) {
+                LayerButton(icon: "map", title: "Satellite", isActive: activeMapLayer == "satellite", compact: true) {
                     onLayerToggle("satellite")
                 }
-                LayerButton(icon: "map.fill", title: "Hybrid", isActive: false, compact: true) {
+                LayerButton(icon: "map.fill", title: "Hybrid", isActive: activeMapLayer == "hybrid", compact: true) {
                     onLayerToggle("hybrid")
                 }
-                LayerButton(icon: "map.circle", title: "Standard", isActive: false, compact: true) {
+                LayerButton(icon: "map.circle", title: "Standard", isActive: activeMapLayer == "standard", compact: true) {
                     onLayerToggle("standard")
                 }
 
@@ -409,14 +479,14 @@ struct ATAKSidePanel: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 10)
 
-                LayerButton(icon: "shield.fill", title: "Friendly", isActive: true, compact: true) {
-                    // Toggle friendly units
+                LayerButton(icon: "shield.fill", title: "Friendly", isActive: showFriendly, compact: true) {
+                    onOverlayToggle("friendly")
                 }
-                LayerButton(icon: "exclamationmark.triangle.fill", title: "Hostile", isActive: true, compact: true) {
-                    // Toggle hostile units
+                LayerButton(icon: "exclamationmark.triangle.fill", title: "Hostile", isActive: showHostile, compact: true) {
+                    onOverlayToggle("hostile")
                 }
-                LayerButton(icon: "questionmark.circle.fill", title: "Unknown", isActive: false, compact: true) {
-                    // Toggle unknown units
+                LayerButton(icon: "questionmark.circle.fill", title: "Unknown", isActive: showUnknown, compact: true) {
+                    onOverlayToggle("unknown")
                 }
             }
             .frame(width: 160)
@@ -515,30 +585,30 @@ struct CoTMarkerView: View {
 
 // MARK: - Server Config View
 
+// MARK: - Server Management Views
+
 struct ServerConfigView: View {
     @ObservedObject var takService: TAKService
-    @State private var serverHost = "204.48.30.216"
-    @State private var serverPort = "8087"
-    @State private var useTLS = false
+    @StateObject var serverManager = ServerManager.shared
+    @State private var showAddServer = false
+    @State private var serverToEdit: TAKServer?
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
         NavigationView {
-            Form {
-                Section("Server Configuration") {
-                    TextField("Host", text: $serverHost)
-                        .autocapitalization(.none)
-                    TextField("Port", text: $serverPort)
-                        .keyboardType(.numberPad)
-                    Toggle("Use TLS", isOn: $useTLS)
-                }
-
-                Section("Status") {
+            List {
+                Section("STATUS") {
                     HStack {
                         Text("Connection")
                         Spacer()
                         Text(takService.connectionStatus)
                             .foregroundColor(takService.isConnected ? .green : .red)
+                    }
+                    HStack {
+                        Text("Active Server")
+                        Spacer()
+                        Text(serverManager.activeServer?.name ?? "None")
+                            .foregroundColor(.blue)
                     }
                     HStack {
                         Text("Messages RX")
@@ -552,18 +622,45 @@ struct ServerConfigView: View {
                     }
                 }
 
+                Section("TAK SERVERS") {
+                    ForEach(serverManager.servers) { server in
+                        ServerRow(
+                            server: server,
+                            isActive: serverManager.activeServer?.id == server.id,
+                            isConnected: takService.isConnected && serverManager.activeServer?.id == server.id,
+                            onSelect: {
+                                selectAndConnect(server)
+                            },
+                            onEdit: {
+                                serverToEdit = server
+                            }
+                        )
+                    }
+                    .onDelete(perform: deleteServers)
+                }
+
                 Section {
-                    Button(action: connectToServer) {
+                    Button(action: { showAddServer = true }) {
                         HStack {
-                            Spacer()
-                            Text(takService.isConnected ? "Disconnect" : "Connect")
-                                .foregroundColor(takService.isConnected ? .red : .blue)
-                            Spacer()
+                            Image(systemName: "plus.circle.fill")
+                            Text("Add Server")
+                        }
+                        .foregroundColor(.blue)
+                    }
+
+                    if takService.isConnected {
+                        Button(action: { takService.disconnect() }) {
+                            HStack {
+                                Spacer()
+                                Text("Disconnect")
+                                    .foregroundColor(.red)
+                                Spacer()
+                            }
                         }
                     }
                 }
             }
-            .navigationTitle("TAK Server")
+            .navigationTitle("TAK Servers")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -572,21 +669,193 @@ struct ServerConfigView: View {
                     }
                 }
             }
+            .sheet(isPresented: $showAddServer) {
+                ServerEditView(server: nil, onSave: { newServer in
+                    serverManager.addServer(newServer)
+                    showAddServer = false
+                })
+            }
+            .sheet(item: $serverToEdit) { server in
+                ServerEditView(server: server, onSave: { updatedServer in
+                    serverManager.updateServer(updatedServer)
+                    serverToEdit = nil
+                })
+            }
         }
     }
 
-    private func connectToServer() {
+    private func selectAndConnect(_ server: TAKServer) {
+        serverManager.setActiveServer(server)
         if takService.isConnected {
             takService.disconnect()
-        } else {
-            guard let port = UInt16(serverPort) else { return }
-            takService.connect(
-                host: serverHost,
-                port: port,
-                protocolType: "tcp",
-                useTLS: useTLS
-            )
         }
+        takService.connect(
+            host: server.host,
+            port: server.port,
+            protocolType: server.protocolType,
+            useTLS: server.useTLS
+        )
+    }
+
+    private func deleteServers(at offsets: IndexSet) {
+        for index in offsets {
+            let server = serverManager.servers[index]
+            serverManager.deleteServer(server)
+        }
+    }
+}
+
+struct ServerRow: View {
+    let server: TAKServer
+    let isActive: Bool
+    let isConnected: Bool
+    let onSelect: () -> Void
+    let onEdit: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(server.name)
+                        .font(.system(size: 15, weight: .semibold))
+                    if isActive {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                            .font(.system(size: 14))
+                    }
+                }
+                Text("\(server.host):\(server.port)")
+                    .font(.system(size: 13))
+                    .foregroundColor(.gray)
+                HStack(spacing: 8) {
+                    Text(server.protocolType.uppercased())
+                        .font(.system(size: 10, weight: .bold))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.blue.opacity(0.2))
+                        .cornerRadius(4)
+                    if server.useTLS {
+                        Text("TLS")
+                            .font(.system(size: 10, weight: .bold))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.green.opacity(0.2))
+                            .cornerRadius(4)
+                    }
+                    if isConnected {
+                        Text("CONNECTED")
+                            .font(.system(size: 10, weight: .bold))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.green.opacity(0.3))
+                            .foregroundColor(.green)
+                            .cornerRadius(4)
+                    }
+                }
+            }
+
+            Spacer()
+
+            HStack(spacing: 12) {
+                Button(action: onEdit) {
+                    Image(systemName: "pencil.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundColor(.blue)
+                }
+                .buttonStyle(PlainButtonStyle())
+
+                Button(action: onSelect) {
+                    Image(systemName: isConnected ? "bolt.circle.fill" : "bolt.circle")
+                        .font(.system(size: 24))
+                        .foregroundColor(isConnected ? .green : .blue)
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+struct ServerEditView: View {
+    let server: TAKServer?
+    let onSave: (TAKServer) -> Void
+
+    @State private var name: String
+    @State private var host: String
+    @State private var port: String
+    @State private var protocolType: String
+    @State private var useTLS: Bool
+    @Environment(\.dismiss) var dismiss
+
+    init(server: TAKServer?, onSave: @escaping (TAKServer) -> Void) {
+        self.server = server
+        self.onSave = onSave
+        _name = State(initialValue: server?.name ?? "")
+        _host = State(initialValue: server?.host ?? "")
+        _port = State(initialValue: server != nil ? "\(server!.port)" : "8087")
+        _protocolType = State(initialValue: server?.protocolType ?? "tcp")
+        _useTLS = State(initialValue: server?.useTLS ?? false)
+    }
+
+    var body: some View {
+        NavigationView {
+            Form {
+                Section("SERVER DETAILS") {
+                    TextField("Name", text: $name)
+                        .autocapitalization(.words)
+                    TextField("Host", text: $host)
+                        .autocapitalization(.none)
+                    TextField("Port", text: $port)
+                        .keyboardType(.numberPad)
+                }
+
+                Section("CONNECTION") {
+                    Picker("Protocol", selection: $protocolType) {
+                        Text("TCP").tag("tcp")
+                        Text("UDP").tag("udp")
+                    }
+                    Toggle("Use TLS", isOn: $useTLS)
+                }
+
+                Section {
+                    Button(action: saveServer) {
+                        HStack {
+                            Spacer()
+                            Text("Save Server")
+                                .foregroundColor(.blue)
+                            Spacer()
+                        }
+                    }
+                    .disabled(name.isEmpty || host.isEmpty || port.isEmpty)
+                }
+            }
+            .navigationTitle(server == nil ? "Add Server" : "Edit Server")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+
+    private func saveServer() {
+        guard let portNum = UInt16(port), !name.isEmpty, !host.isEmpty else { return }
+
+        let updatedServer = TAKServer(
+            id: server?.id ?? UUID(),
+            name: name,
+            host: host,
+            port: portNum,
+            protocolType: protocolType,
+            useTLS: useTLS,
+            isDefault: server?.isDefault ?? false
+        )
+
+        onSave(updatedServer)
+        dismiss()
     }
 }
 
@@ -611,5 +880,139 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         location = locations.last
         accuracy = locations.last?.horizontalAccuracy ?? 0
+    }
+}
+
+// MARK: - Tactical Map View (UIViewRepresentable for mapType support)
+
+struct TacticalMapView: UIViewRepresentable {
+    @Binding var region: MKCoordinateRegion
+    @Binding var mapType: MKMapType
+    @Binding var trackingMode: MapUserTrackingMode
+    let markers: [CoTMarker]
+    let showsUserLocation: Bool
+
+    func makeUIView(context: Context) -> MKMapView {
+        let mapView = MKMapView()
+        mapView.delegate = context.coordinator
+        mapView.showsUserLocation = showsUserLocation
+        mapView.mapType = mapType
+        mapView.region = region
+        return mapView
+    }
+
+    func updateUIView(_ mapView: MKMapView, context: Context) {
+        // Update map type
+        if mapView.mapType != mapType {
+            mapView.mapType = mapType
+            print("🗺️ Map type updated to: \(mapTypeString(mapType))")
+        }
+
+        // Update region
+        if !context.coordinator.isUserInteracting {
+            mapView.setRegion(region, animated: true)
+        }
+
+        // Update markers
+        updateAnnotations(mapView: mapView, markers: markers)
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    private func updateAnnotations(mapView: MKMapView, markers: [CoTMarker]) {
+        // Remove old annotations
+        mapView.removeAnnotations(mapView.annotations.filter { !($0 is MKUserLocation) })
+
+        // Add new annotations
+        let annotations = markers.map { marker -> MKPointAnnotation in
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = marker.coordinate
+            annotation.title = marker.callsign
+            annotation.subtitle = marker.type
+            return annotation
+        }
+        mapView.addAnnotations(annotations)
+    }
+
+    private func mapTypeString(_ type: MKMapType) -> String {
+        switch type {
+        case .standard: return "Standard"
+        case .satellite: return "Satellite"
+        case .hybrid: return "Hybrid"
+        case .satelliteFlyover: return "Satellite Flyover"
+        case .hybridFlyover: return "Hybrid Flyover"
+        case .mutedStandard: return "Muted Standard"
+        @unknown default: return "Unknown"
+        }
+    }
+
+    class Coordinator: NSObject, MKMapViewDelegate {
+        var parent: TacticalMapView
+        var isUserInteracting = false
+
+        init(_ parent: TacticalMapView) {
+            self.parent = parent
+        }
+
+        func mapView(_ mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+            isUserInteracting = true
+        }
+
+        func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+            DispatchQueue.main.async {
+                self.parent.region = mapView.region
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.isUserInteracting = false
+            }
+        }
+
+        func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+            if annotation is MKUserLocation {
+                return nil
+            }
+
+            let identifier = "CoTMarker"
+            var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier)
+
+            if annotationView == nil {
+                annotationView = MKAnnotationView(annotation: annotation, reuseIdentifier: identifier)
+                annotationView?.canShowCallout = true
+            } else {
+                annotationView?.annotation = annotation
+            }
+
+            // Determine marker color based on subtitle (type)
+            let type = annotation.subtitle ?? ""
+            let color: UIColor
+            if type?.contains("a-f") == true {
+                color = .systemBlue  // Friendly
+            } else if type?.contains("a-h") == true {
+                color = .systemRed   // Hostile
+            } else {
+                color = .systemYellow // Unknown
+            }
+
+            // Create custom marker image
+            let size = CGSize(width: 30, height: 30)
+            let renderer = UIGraphicsImageRenderer(size: size)
+            let image = renderer.image { context in
+                color.setFill()
+                let path = UIBezierPath(ovalIn: CGRect(origin: .zero, size: size))
+                path.fill()
+
+                // Add border
+                UIColor.white.setStroke()
+                path.lineWidth = 2
+                path.stroke()
+            }
+
+            annotationView?.image = image
+            annotationView?.centerOffset = CGPoint(x: 0, y: -size.height / 2)
+
+            return annotationView
+        }
     }
 }

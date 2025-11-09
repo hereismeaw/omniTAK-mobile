@@ -11,6 +11,7 @@
 		A1111111111111111111111100000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100000012 /* ContentView.swift */; };
 		A1111111111111111111111100000003 /* TAKService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100000013 /* TAKService.swift */; };
 		A1111111111111111111111100000006 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100000014 /* MapViewController.swift */; };
+		A1111111111111111111111100000007 /* ServerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100000015 /* ServerManager.swift */; };
 		A1111111111111111111111100000004 /* OmniTAKMobile.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100000021 /* OmniTAKMobile.xcframework */; };
 		A1111111111111111111111100000005 /* OmniTAKMobile.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100000021 /* OmniTAKMobile.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -34,6 +35,7 @@
 		A1111111111111111111111100000012 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A1111111111111111111111100000013 /* TAKService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TAKService.swift; sourceTree = "<group>"; };
 		A1111111111111111111111100000014 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
+		A1111111111111111111111100000015 /* ServerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerManager.swift; sourceTree = "<group>"; };
 		A1111111111111111111111100000021 /* OmniTAKMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = OmniTAKMobile.xcframework; sourceTree = "<group>"; };
 		A1111111111111111111111100000041 /* OmniTAKTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OmniTAKTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1111111111111111111111100000051 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -67,6 +69,7 @@
 				A1111111111111111111111100000012 /* ContentView.swift */,
 				A1111111111111111111111100000014 /* MapViewController.swift */,
 				A1111111111111111111111100000013 /* TAKService.swift */,
+				A1111111111111111111111100000015 /* ServerManager.swift */,
 				A1111111111111111111111100000051 /* Info.plist */,
 			);
 			path = OmniTAKTest;
@@ -142,6 +145,7 @@
 				A1111111111111111111111100000002 /* ContentView.swift in Sources */,
 				A1111111111111111111111100000006 /* MapViewController.swift in Sources */,
 				A1111111111111111111111100000003 /* TAKService.swift in Sources */,
+				A1111111111111111111111100000007 /* ServerManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
