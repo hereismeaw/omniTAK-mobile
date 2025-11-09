@@ -8,6 +8,21 @@
 
 **Omni-BASE is a cross-platform TAK (Team Awareness Kit) client built with Rust and native mobile frameworks.** It provides full ATAK-compatible tactical map functionality with multi-server management, real-time CoT (Cursor on Target) messaging, and a modern native UI.
 
+## 🎉 Latest Update: iOS Physical Device Deployment (Nov 9, 2025)
+
+**Successfully deployed YA-TAK iOS app to physical iPhone in development mode!**
+
+- ✅ Built and installed on iPhone 15 Pro (iOS 18.7.1)
+- ✅ Full ATAK-style UI with tactical theme
+- ✅ Connected to live TAK server (204.48.30.216:8087 via TCP)
+- ✅ Drawing tools fully operational (circles, polygons)
+- ✅ Multi-server management working
+- ✅ Real-time map with satellite imagery
+- ✅ Portrait and landscape orientation support
+- ✅ User profile system (ALPHA-1 Operator)
+
+See [screenshots below](#screenshots) for live device captures!
+
 ## Features
 
 ### 🗺️ Tactical Map Interface
@@ -31,10 +46,19 @@
 - **Event Tracking** - Monitor sent and received message counts
 - **Type Filtering** - Filter units by affiliation (friendly, hostile, unknown)
 
+### ✏️ Drawing Tools
+- **Circles** - Draw circular areas of interest on the map
+- **Polygons** - Create multi-point polygon shapes
+- **Drawing Management** - View, edit, and clear all drawings
+- **Persistent Storage** - Drawings saved and restored across sessions
+- **Color Coding** - Orange and green tactical colors for visibility
+
 ### 🎨 User Interface
+- **YA-TAK Branding** - Professional tactical theme with yellow accent (#FFFC00)
+- **Navigation Drawer** - ATAK-style slide-in menu with user profile
 - **Responsive Design** - Works in portrait and landscape orientations
 - **Status Bar** - Real-time connection status, message counts, GPS accuracy, time
-- **Bottom Toolbar** - Quick access to GPS, broadcast, zoom, layers, measure, and route tools
+- **Bottom Toolbar** - Quick access to GPS, broadcast, zoom, layers, measure, and drawing tools
 - **Layers Panel** - Toggle map types and unit overlays with visual feedback
 - **Haptic Feedback** - Tactile response for all button interactions
 - **Dark Mode Ready** - Semi-transparent overlays optimized for tactical use
@@ -202,28 +226,29 @@ TAKServer(
 
 ## Screenshots
 
-### Main Tactical Map
+### 📱 Live iPhone Deployment (Nov 9, 2025)
+
+#### Tactical Map with Drawing Tools (Landscape)
 <p align="center">
-  <img src="./docs/assets/tactical-map-satellite-landscape.png" width="700" alt="ATAK-style tactical map with satellite imagery">
+  <img src="./docs/screenshots/ios/IMG_0207.PNG" width="700" alt="YA-TAK tactical map with circles and polygons">
 </p>
 
-*Satellite view with GPS tracking, CoT markers, and tactical overlays*
+*Full tactical view showing drawn circle and polygon on satellite imagery with drawings panel*
 
-### Map Layers & Views
-
+#### Navigation Drawer & Drawing Tools (Portrait)
 <p align="center">
-  <img src="./docs/assets/layers-panel-landscape.png" width="300" alt="Layers panel with Hybrid view selected">
-  <img src="./docs/assets/map-standard-landscape.png" width="300" alt="Standard street map view">
+  <img src="./docs/screenshots/ios/IMG_0210.PNG" width="300" alt="YA-TAK navigation drawer">
+  <img src="./docs/screenshots/ios/IMG_0208.PNG" width="300" alt="Drawing tools panel">
 </p>
 
-*Left: Layers panel with map type and unit filters | Right: Standard map view*
+*Left: YA-TAK navigation drawer with ALPHA-1 user profile | Right: Drawing tools with active shapes*
 
-### Server Management
+#### Server Management (Portrait)
 <p align="center">
-  <img src="./docs/assets/server-list-landscape.png" width="700" alt="Multi-server configuration screen">
+  <img src="./docs/screenshots/ios/IMG_0209.PNG" width="300" alt="TAK Servers management screen">
 </p>
 
-*TAK Servers management with connection status and server switching*
+*Multi-server configuration showing active connection to TAK Server via TCP*
 
 ## Development
 
@@ -277,10 +302,18 @@ xcrun simctl launch "iPhone 16 Pro" com.engindearing.omnitak.test
 
 ## Roadmap
 
+### Completed ✅
+- [x] iOS physical device deployment
+- [x] Drawing tools (circles, polygons)
+- [x] Multi-server management
+- [x] Real-time TAK server connectivity
+- [x] ATAK-style navigation drawer
+- [x] User profile system
+
+### In Progress 🚧
 - [ ] Android implementation
 - [ ] Advanced CoT filtering and search
 - [ ] Offline map caching
-- [ ] Drawing tools (routes, markers, shapes)
 - [ ] Team chat integration
 - [ ] File sharing and attachments
 - [ ] Mission planning tools

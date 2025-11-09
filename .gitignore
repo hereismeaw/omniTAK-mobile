@@ -14,3 +14,16 @@ scripts/mirroring/bin
 node_modules/
 package-lock.json
 
+# Xcode
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/
+*.xcworkspace/xcuserdata/
+DerivedData/
+build/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcuserstate
+*.xcodeproj/project.pbxproj.backup*
+*.xcframework.zip
