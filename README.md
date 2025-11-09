@@ -46,38 +46,56 @@
 ```
 omni-BASE/
 ├── apps/
-│   └── omnitak_ios_test/        # Native iOS app
-│       ├── OmniTAKTest/
-│       │   ├── OmniTAKTestApp.swift      # App entry point
-│       │   ├── MapViewController.swift   # Main ATAK interface (800+ lines)
-│       │   ├── TAKService.swift          # TAK server integration
-│       │   ├── ServerManager.swift       # Multi-server management
-│       │   └── Info.plist                # Location permissions
-│       └── OmniTAKMobile.xcframework     # Rust FFI bindings
+│   ├── omnitak_ios_test/        # Native iOS app
+│   │   ├── OmniTAKTest/
+│   │   │   ├── OmniTAKTestApp.swift      # App entry point
+│   │   │   ├── MapViewController.swift   # Main ATAK interface (800+ lines)
+│   │   │   ├── TAKService.swift          # TAK server integration
+│   │   │   ├── ServerManager.swift       # Multi-server management
+│   │   │   └── Info.plist                # Location permissions
+│   │   └── OmniTAKMobile.xcframework     # Rust FFI bindings
+│   └── omnitak_android/         # Valdi Android app
+│       ├── BUILD.bazel                   # Bazel build configuration
+│       ├── src/valdi/omnitak_app/        # TypeScript entry point
+│       └── app_assets/android/           # Android resources
 └── modules/
-    └── omnitak_mobile/           # Rust core library
+    └── omnitak_mobile/           # Cross-platform module
+        ├── src/                          # TypeScript/TSX application
+        ├── ios/                          # iOS native layer
+        └── android/                      # Android native layer
+            ├── native/                   # Kotlin + JNI + Rust
+            └── maplibre/                 # MapLibre integration
 ```
 
 ### Technology Stack
 
-- **Frontend**: SwiftUI + UIKit (iOS)
-- **Core Library**: Rust (cross-platform)
-- **FFI**: C bindings via XCFramework
-- **Mapping**: MapKit (iOS native)
-- **Location**: CoreLocation
-- **Storage**: UserDefaults (local persistence)
-- **Protocol**: TCP/UDP with TAK CoT XML
+- **iOS Frontend**: SwiftUI + UIKit
+- **Android Frontend**: Valdi framework (TypeScript + Kotlin)
+- **Core Library**: Rust (cross-platform TAK protocol)
+- **FFI**: C bindings (XCFramework for iOS, JNI for Android)
+- **Mapping**: MapKit (iOS), MapLibre GL (Android)
+- **Location**: CoreLocation (iOS), Android Location API
+- **Build System**: Xcode (iOS), Bazel (Android)
+- **Protocol**: TCP/UDP/TLS with TAK CoT XML
 
 ## Quick Start
 
-### Prerequisites
+### iOS Prerequisites
 
 - Xcode 15.0+
 - iOS 15.0+ deployment target
 - Rust toolchain (for building core library)
 - macOS with Apple Silicon or Intel
 
-### Installation
+### Android Prerequisites
+
+- Bazel 7.2.1+
+- Android SDK API 34+
+- Android NDK r21+
+- Rust toolchain with Android targets
+- Node.js 18+
+
+### iOS Installation
 
 1. **Clone the repository:**
    ```bash
@@ -105,6 +123,44 @@ omni-BASE/
 5. **Build and run:**
    - Select iPhone simulator or device
    - Press Cmd+R to build and run
+
+### Android Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/engindearing-projects/omni-BASE.git
+   cd omni-BASE
+   ```
+
+2. **Install Rust Android targets:**
+   ```bash
+   rustup target add aarch64-linux-android
+   rustup target add armv7-linux-androideabi
+   rustup target add x86_64-linux-android
+   rustup target add i686-linux-android
+   ```
+
+3. **Build Rust libraries for Android:**
+   ```bash
+   # Set path to omni-TAK repository
+   export OMNI_TAK_DIR=~/omni-TAK
+
+   cd modules/omnitak_mobile
+   ./build_android.sh
+   ```
+
+4. **Build Android APK:**
+   ```bash
+   cd ../..
+   bazel build //apps/omnitak_android
+   ```
+
+5. **Install on device:**
+   ```bash
+   adb install -r bazel-bin/apps/omnitak_android/omnitak_android.apk
+   ```
+
+For detailed Android build instructions, see [apps/omnitak_android/README.md](apps/omnitak_android/README.md).
 
 ### Using the App
 

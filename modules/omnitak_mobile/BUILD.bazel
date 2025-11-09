@@ -94,6 +94,47 @@ filegroup(
 # Android Native Libraries
 #####################################
 
+# Import Rust static libraries for Android
+# These are built separately using build_android.sh and placed in lib/ directories
+
+cc_import(
+    name = "omnitak_mobile_android_arm64",
+    static_library = "android/native/lib/arm64-v8a/libomnitak_mobile.a",
+    visibility = ["//visibility:private"],
+)
+
+cc_import(
+    name = "omnitak_mobile_android_armv7",
+    static_library = "android/native/lib/armeabi-v7a/libomnitak_mobile.a",
+    visibility = ["//visibility:private"],
+)
+
+cc_import(
+    name = "omnitak_mobile_android_x86_64",
+    static_library = "android/native/lib/x86_64/libomnitak_mobile.a",
+    visibility = ["//visibility:private"],
+)
+
+cc_import(
+    name = "omnitak_mobile_android_x86",
+    static_library = "android/native/lib/x86/libomnitak_mobile.a",
+    visibility = ["//visibility:private"],
+)
+
+# Platform-specific Android library selector
+# Selects the correct architecture based on target platform
+alias(
+    name = "omnitak_mobile_android_rust",
+    actual = select({
+        "@platforms//cpu:aarch64": ":omnitak_mobile_android_arm64",
+        "@platforms//cpu:armv7": ":omnitak_mobile_android_armv7",
+        "@platforms//cpu:x86_64": ":omnitak_mobile_android_x86_64",
+        "@platforms//cpu:x86_32": ":omnitak_mobile_android_x86",
+        "//conditions:default": ":omnitak_mobile_android_arm64",
+    }),
+    visibility = ["//visibility:private"],
+)
+
 # JNI C++ bridge for Android
 # Handles Kotlin <-> C FFI <-> Rust communication
 cc_library(
@@ -112,9 +153,7 @@ cc_library(
         "-landroid",  # Android API
     ],
     deps = [
-        # Link to Rust static library - this would be built separately
-        # and linked here. For now, we assume it's available.
-        # In a full setup, you'd use rules_rust to build this.
+        ":omnitak_mobile_android_rust",
     ],
     alwayslink = True,
     visibility = ["//visibility:private"],
