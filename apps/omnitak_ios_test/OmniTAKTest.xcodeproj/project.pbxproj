@@ -11,7 +11,6 @@
 		A1111111111111111111111100000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100000012 /* ContentView.swift */; };
 		A1111111111111111111111100000003 /* TAKService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100000013 /* TAKService.swift */; };
 		A1111111111111111111111100000004 /* OmniTAKMobile.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100000021 /* OmniTAKMobile.xcframework */; };
-		A1111111111111111111111100000005 /* OmniTAKMobile.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100000021 /* OmniTAKMobile.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A1111111111111111111111100000006 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100000014 /* MapViewController.swift */; };
 		A1111111111111111111111100000007 /* ServerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100000015 /* ServerManager.swift */; };
 		A1111111111111111111111100000200 /* ChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1111111111111111111111100001200 /* ChatManager.swift */; };
@@ -49,17 +48,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		A1111111111111111111111100000031 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				A1111111111111111111111100000005 /* OmniTAKMobile.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -187,7 +175,6 @@
 			buildPhases = (
 				A11111111111111111111111000000C1 /* Sources */,
 				A1111111111111111111111100000061 /* Frameworks */,
-				A1111111111111111111111100000031 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
