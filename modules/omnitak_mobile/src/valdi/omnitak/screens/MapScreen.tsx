@@ -7,6 +7,7 @@ import { parseCotXml, getAffiliation, getAffiliationColor } from '../services/Co
 import { MarkerManager } from '../services/MarkerManager';
 import { SymbolRenderer } from '../services/SymbolRenderer';
 import { MarkerEvent } from '../models/MarkerModel';
+import { Coordinates } from './EnhancedMapScreen';
 
 /**
  * @ViewModel
@@ -31,7 +32,7 @@ export interface MapScreenViewModel {
  * })
  */
 export interface MapScreenContext {
-  initialCenter?: { lat: number; lon: number };
+  initialCenter?: Coordinates;
   initialZoom?: number;
 }
 

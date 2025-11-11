@@ -9,7 +9,7 @@
  */
 
 import { takService, ServerConfig, ConnectionInfo } from './TakService';
-import { parseCotXml, CoTEvent } from './CotParser';
+import { parseCotXml, CotEvent } from './CotParser';
 
 /**
  * Data types that can be selectively shared
@@ -34,10 +34,10 @@ export type DataType =
  */
 export interface DataSharingPolicy {
   // Which data types to receive from this server
-  receiveTypes: DataType[];
+  receiveTypes: string[];
 
   // Which data types to send to this server
-  sendTypes: DataType[];
+  sendTypes: string[];
 
   // Auto-share mode: automatically share received data to other servers
   autoShare: boolean;
@@ -61,7 +61,7 @@ export interface FederatedServer {
   connectionId: number | null;
   config: ServerConfig;
   policy: DataSharingPolicy;
-  status: 'connected' | 'connecting' | 'disconnected' | 'error';
+  status: string;
   lastError?: string;
 }
 
@@ -72,10 +72,10 @@ export interface FederatedServer {
  * })
  */
 export interface FederatedCoTEvent {
-  event: CoTEvent;
+  event: CotEvent;
   sourceServerId: string;
   sourceServerName: string;
-  receivedAt: Date;
+  receivedAt: number; // Unix timestamp in milliseconds
   sharedTo: string[]; // Server IDs this event has been shared to
 }
 
@@ -265,7 +265,7 @@ export class MultiServerFederation {
       event,
       sourceServerId: serverId,
       sourceServerName: server.name,
-      receivedAt: new Date(),
+      receivedAt: Date.now(),
       sharedTo: [],
     };
 
@@ -292,7 +292,7 @@ export class MultiServerFederation {
   /**
    * Check if data should be received from this server based on policy
    */
-  private shouldReceive(server: FederatedServer, event: CoTEvent): boolean {
+  private shouldReceive(server: FederatedServer, event: CotEvent): boolean {
     const { receiveTypes } = server.policy;
 
     if (receiveTypes.includes('all')) {
@@ -306,7 +306,7 @@ export class MultiServerFederation {
   /**
    * Check if data should be sent to this server based on policy
    */
-  private shouldSend(server: FederatedServer, event: CoTEvent): boolean {
+  private shouldSend(server: FederatedServer, event: CotEvent): boolean {
     const { sendTypes, blueTeamOnly } = server.policy;
 
     // Blue team only mode: only send friendly data
@@ -362,7 +362,7 @@ export class MultiServerFederation {
   /**
    * Manually send CoT event to specific servers
    */
-  async sendToServers(event: CoTEvent, serverIds: string[]): Promise<void> {
+  async sendToServers(event: CotEvent, serverIds: string[]): Promise<void> {
     const cotXml = this.generateCotXml(event);
 
     for (const id of serverIds) {
@@ -384,7 +384,7 @@ export class MultiServerFederation {
   /**
    * Broadcast CoT event to all connected servers (respecting policies)
    */
-  async broadcast(event: CoTEvent): Promise<void> {
+  async broadcast(event: CotEvent): Promise<void> {
     const serverIds = Array.from(this.servers.keys());
     await this.sendToServers(event, serverIds);
   }
@@ -408,10 +408,10 @@ export class MultiServerFederation {
   /**
    * Generate CoT XML from event
    */
-  private generateCotXml(event: CoTEvent): string {
+  private generateCotXml(event: CotEvent): string {
     // Generate CoT XML - simplified version
-    const callsign = event.detail.callsign || event.uid;
-    const team = event.detail.team || 'Cyan';
+    const callsign = event.detail?.contact?.callsign || event.uid;
+    const team = event.detail?.group?.name || 'Cyan';
 
     return `<?xml version="1.0" encoding="UTF-8"?>
 <event version="2.0" uid="${event.uid}" type="${event.type}" time="${event.time}" start="${event.start}" stale="${event.stale}" how="h-e">

@@ -73,14 +73,16 @@ private enum OmniTAKProtocol: Int32 {
 public struct ServerConfig: Codable {
     public let host: String
     public let port: Int
-    public let protocol: String
+    public let `protocol`: String  // Escaped keyword with backticks
     public let useTls: Bool
     public let certificateId: String?
     public let reconnect: Bool
     public let reconnectDelayMs: Int
 
     enum CodingKeys: String, CodingKey {
-        case host, port, protocol, useTls, certificateId, reconnect, reconnectDelayMs
+        case host, port
+        case `protocol` = "protocol"  // Escaped keyword with backticks
+        case useTls, certificateId, reconnect, reconnectDelayMs
     }
 }
 
@@ -370,7 +372,7 @@ extension OmniTAKNativeBridge {
         return ServerConfig(
             host: host,
             port: port,
-            protocol: protocolStr,
+            `protocol`: protocolStr,
             useTls: useTls,
             certificateId: dict["certificateId"] as? String,
             reconnect: reconnect,

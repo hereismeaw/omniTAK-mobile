@@ -1,8 +1,14 @@
 import { Component } from 'valdi_core/src/Component';
-import { Label, View, Button, ScrollView } from 'valdi_tsx/src/NativeTemplateElements';
+import { Label, View, ScrollView } from 'valdi_tsx/src/NativeTemplateElements';
 import { Style } from 'valdi_core/src/Style';
-import { systemFont } from 'valdi_core/src/SystemFont';
+import { systemFont, systemBoldFont } from 'valdi_core/src/SystemFont';
 
+/**
+ * @ExportModel({
+ *   ios: 'Plugin',
+ *   android: 'com.engindearing.omnitak.Plugin'
+ * })
+ */
 export interface Plugin {
   id: string;
   name: string;
@@ -11,7 +17,7 @@ export interface Plugin {
   author: string;
   enabled: boolean;
   installed: boolean;
-  category: 'mapping' | 'tools' | 'communication' | 'sensors' | 'other';
+  category: string;
 }
 
 /**
@@ -24,7 +30,7 @@ export interface Plugin {
 export interface PluginManagementViewModel {
   installedPlugins: Plugin[];
   availablePlugins: Plugin[];
-  selectedTab: 'installed' | 'available';
+  selectedTab: string;
 }
 
 /**
@@ -41,7 +47,7 @@ export interface PluginManagementContext {
   onInstallPlugin?: (pluginId: string) => void;
   onUninstallPlugin?: (pluginId: string) => void;
   onPluginSettings?: (pluginId: string) => void;
-  onTabChange?: (tab: 'installed' | 'available') => void;
+  onTabChange?: (tab: string) => void;
 }
 
 /**
@@ -69,12 +75,12 @@ export class PluginManagementScreen extends Component<
     <view style={styles.container}>
       {/* Header */}
       <view style={styles.header}>
-        <view style={styles.backButton} onClick={this.handleBack.bind(this)}>
+        <view style={styles.backButton} onTap={this.handleBack.bind(this)}>
           <label value="←" font={systemFont(24)} color="#FFFFFF" />
         </view>
         <label
           value="Plugins"
-          font={systemFont(20, 'bold')}
+          font={systemBoldFont(20)}
           color="#FFFFFF"
         />
         <view width={40} /> {/* Spacer */}
@@ -84,11 +90,11 @@ export class PluginManagementScreen extends Component<
       <view style={styles.tabBar}>
         <view
           style={selectedTab === 'installed' ? styles.tabActive : styles.tab}
-          onClick={() => this.handleTabChange('installed')}
+          onTap={() => this.handleTabChange('installed')}
         >
           <label
             value="Installed"
-            font={systemFont(14, selectedTab === 'installed' ? 'bold' : 'regular')}
+            font={selectedTab === 'installed' ? systemBoldFont(14) : systemFont(14)}
             color={selectedTab === 'installed' ? '#FFFC00' : '#CCCCCC'}
           />
           <label
@@ -100,11 +106,11 @@ export class PluginManagementScreen extends Component<
         </view>
         <view
           style={selectedTab === 'available' ? styles.tabActive : styles.tab}
-          onClick={() => this.handleTabChange('available')}
+          onTap={() => this.handleTabChange('available')}
         >
           <label
             value="Available"
-            font={systemFont(14, selectedTab === 'available' ? 'bold' : 'regular')}
+            font={selectedTab === 'available' ? systemBoldFont(14) : systemFont(14)}
             color={selectedTab === 'available' ? '#FFFC00' : '#CCCCCC'}
           />
           <label
@@ -117,7 +123,7 @@ export class PluginManagementScreen extends Component<
       </view>
 
       {/* Plugin list */}
-      <ScrollView style={styles.scrollView}>
+      <view style={styles.scrollView}>
         <view style={styles.content}>
           {plugins.length === 0 ? (
             <view style={styles.emptyState}>
@@ -137,7 +143,7 @@ export class PluginManagementScreen extends Component<
             plugins.map((plugin) => this.renderPluginItem(plugin))
           )}
         </view>
-      </ScrollView>
+      </view>
     </view>;
   }
 
@@ -151,14 +157,14 @@ export class PluginManagementScreen extends Component<
           <label value={categoryEmoji} font={systemFont(20)} marginRight={8} />
           <label
             value={plugin.name}
-            font={systemFont(16, 'bold')}
+            font={systemBoldFont(16)}
             color="#FFFFFF"
           />
           {plugin.enabled && (
             <view style={styles.enabledBadge}>
               <label
                 value="ACTIVE"
-                font={systemFont(10, 'bold')}
+                font={systemBoldFont(10)}
                 color="#4CAF50"
               />
             </view>
@@ -182,7 +188,8 @@ export class PluginManagementScreen extends Component<
             value="•"
             font={systemFont(12)}
             color="#666666"
-            marginHorizontal={8}
+            marginLeft={8}
+            marginRight={8}
           />
           <label
             value={plugin.author}
@@ -193,7 +200,8 @@ export class PluginManagementScreen extends Component<
             value="•"
             font={systemFont(12)}
             color="#666666"
-            marginHorizontal={8}
+            marginLeft={8}
+            marginRight={8}
           />
           <label
             value={plugin.category}
@@ -205,58 +213,54 @@ export class PluginManagementScreen extends Component<
 
       {/* Action buttons */}
       <view style={styles.pluginActions}>
-        {plugin.installed && plugin.enabled && (
-          <view
-            style={styles.actionButton}
-            onClick={() => this.handleDisable(plugin.id)}
-          >
-            <label
-              value="Disable"
-              font={systemFont(12, 'bold')}
-              color="#FF9800"
-            />
-          </view>
-        )}
+        {plugin.installed ? (
+          <view style={styles.installedActions}>
+            {plugin.enabled ? (
+              <view
+                style={styles.actionButton}
+                onTap={() => this.handleDisable(plugin.id)}
+              >
+                <label
+                  value="Disable"
+                  font={systemBoldFont(12)}
+                  color="#FF9800"
+                />
+              </view>
+            ) : (
+              <view
+                style={styles.actionButton}
+                onTap={() => this.handleEnable(plugin.id)}
+              >
+                <label
+                  value="Enable"
+                  font={systemBoldFont(12)}
+                  color="#4CAF50"
+                />
+              </view>
+            )}
 
-        {plugin.installed && !plugin.enabled && (
-          <view
-            style={styles.actionButton}
-            onClick={() => this.handleEnable(plugin.id)}
-          >
-            <label
-              value="Enable"
-              font={systemFont(12, 'bold')}
-              color="#4CAF50"
-            />
-          </view>
-        )}
+            <view
+              style={styles.iconButton}
+              onTap={() => this.handleSettings(plugin.id)}
+            >
+              <label value="⚙️" font={systemFont(16)} />
+            </view>
 
-        {plugin.installed && (
-          <view
-            style={styles.iconButton}
-            onClick={() => this.handleSettings(plugin.id)}
-          >
-            <label value="⚙️" font={systemFont(16)} />
+            <view
+              style={styles.iconButton}
+              onTap={() => this.handleUninstall(plugin.id)}
+            >
+              <label value="🗑️" font={systemFont(16)} />
+            </view>
           </view>
-        )}
-
-        {plugin.installed && (
-          <view
-            style={styles.iconButton}
-            onClick={() => this.handleUninstall(plugin.id)}
-          >
-            <label value="🗑️" font={systemFont(16)} />
-          </view>
-        )}
-
-        {!plugin.installed && (
+        ) : (
           <view
             style={styles.actionButtonPrimary}
-            onClick={() => this.handleInstall(plugin.id)}
+            onTap={() => this.handleInstall(plugin.id)}
           >
             <label
               value="Install"
-              font={systemFont(12, 'bold')}
+              font={systemBoldFont(12)}
               color="#1E1E1E"
             />
           </view>
@@ -286,7 +290,7 @@ export class PluginManagementScreen extends Component<
     }
   }
 
-  private handleTabChange(tab: 'installed' | 'available'): void {
+  private handleTabChange(tab: string): void {
     if (this.context.onTabChange) {
       this.context.onTabChange(tab);
     }
@@ -338,8 +342,6 @@ const styles = {
     padding: 16,
     paddingTop: 60,
     backgroundColor: '#2A2A2A',
-    borderBottomWidth: 1,
-    borderBottomColor: '#3A3A3A',
   }),
 
   backButton: new Style<View>({
@@ -347,38 +349,31 @@ const styles = {
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
   }),
 
   tabBar: new Style<View>({
     flexDirection: 'row',
     backgroundColor: '#2A2A2A',
-    borderBottomWidth: 1,
-    borderBottomColor: '#3A3A3A',
   }),
 
   tab: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
-    cursor: 'pointer',
   }),
 
   tabActive: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
-    borderBottomWidth: 3,
-    borderBottomColor: '#FFFC00',
-    cursor: 'pointer',
   }),
 
-  scrollView: new Style<ScrollView>({
-    flex: 1,
+  scrollView: new Style<View>({
+    // flex: 1, // Not supported by Valdi
   }),
 
   content: new Style<View>({
@@ -409,8 +404,10 @@ const styles = {
 
   enabledBadge: new Style<View>({
     marginLeft: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 2,
+    paddingBottom: 2,
     backgroundColor: 'rgba(76, 175, 80, 0.2)',
     borderRadius: 4,
     borderWidth: 1,
@@ -427,23 +424,30 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    gap: 8,
+    // gap removed - not supported by Valdi
+  }),
+
+  installedActions: new Style<View>({
+    flexDirection: 'row',
+    alignItems: 'center',
   }),
 
   actionButton: new Style<View>({
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
     backgroundColor: '#3A3A3A',
     borderRadius: 4,
-    cursor: 'pointer',
   }),
 
   actionButtonPrimary: new Style<View>({
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
     backgroundColor: '#FFFC00',
     borderRadius: 4,
-    cursor: 'pointer',
   }),
 
   iconButton: new Style<View>({
@@ -453,6 +457,5 @@ const styles = {
     justifyContent: 'center',
     backgroundColor: '#3A3A3A',
     borderRadius: 4,
-    cursor: 'pointer',
   }),
 };

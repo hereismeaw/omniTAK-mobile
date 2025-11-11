@@ -1,14 +1,20 @@
 import { Component } from 'valdi_core/src/Component';
-import { Label, View, Button, ScrollView } from 'valdi_tsx/src/NativeTemplateElements';
+import { Label, View, ScrollView } from 'valdi_tsx/src/NativeTemplateElements';
 import { Style } from 'valdi_core/src/Style';
-import { systemFont } from 'valdi_core/src/SystemFont';
+import { systemFont, systemBoldFont } from 'valdi_core/src/SystemFont';
 
+/**
+ * @ExportModel({
+ *   ios: 'SettingsItem',
+ *   android: 'com.engindearing.omnitak.SettingsItem'
+ * })
+ */
 export interface SettingsItem {
   id: string;
   title: string;
   description?: string;
   value?: string;
-  type: 'toggle' | 'option' | 'action' | 'section';
+  type: string;
   enabled?: boolean;
 }
 
@@ -58,23 +64,23 @@ export class SettingsScreen extends Component<
     <view style={styles.container}>
       {/* Header */}
       <view style={styles.header}>
-        <view style={styles.backButton} onClick={this.handleBack.bind(this)}>
+        <view style={styles.backButton} onTap={this.handleBack.bind(this)}>
           <label value="←" font={systemFont(24)} color="#FFFFFF" />
         </view>
         <label
           value="Settings"
-          font={systemFont(20, 'bold')}
+          font={systemBoldFont(20)}
           color="#FFFFFF"
         />
         <view width={40} /> {/* Spacer for centering */}
       </view>
 
       {/* Settings list */}
-      <ScrollView style={styles.scrollView}>
+      <view style={styles.scrollView}>
         <view style={styles.content}>
           {settings.map((setting) => this.renderSettingItem(setting))}
         </view>
-      </ScrollView>
+      </view>
     </view>;
   }
 
@@ -83,7 +89,7 @@ export class SettingsScreen extends Component<
       <view style={styles.sectionHeader}>
         <label
           value={setting.title}
-          font={systemFont(14, 'bold')}
+          font={systemBoldFont(14)}
           color="#FFFC00"
         />
       </view>;
@@ -110,7 +116,7 @@ export class SettingsScreen extends Component<
       {setting.type === 'toggle' && (
         <view
           style={setting.enabled ? styles.toggleOn : styles.toggleOff}
-          onClick={() => this.handleToggle(setting.id, !setting.enabled)}
+          onTap={() => this.handleToggle(setting.id, !setting.enabled)}
         >
           <view
             style={setting.enabled ? styles.toggleKnobOn : styles.toggleKnobOff}
@@ -168,8 +174,6 @@ const styles = {
     padding: 16,
     paddingTop: 60, // Account for status bar
     backgroundColor: '#2A2A2A',
-    borderBottomWidth: 1,
-    borderBottomColor: '#3A3A3A',
   }),
 
   backButton: new Style<View>({
@@ -177,11 +181,11 @@ const styles = {
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
   }),
 
-  scrollView: new Style<ScrollView>({
-    flex: 1,
+  scrollView: new Style<View>({
+    width: '100%',
+    height: '100%',
   }),
 
   content: new Style<View>({
@@ -189,8 +193,10 @@ const styles = {
   }),
 
   sectionHeader: new Style<View>({
-    paddingVertical: 12,
-    paddingHorizontal: 4,
+    paddingTop: 12,
+    paddingBottom: 12,
+    paddingLeft: 4,
+    paddingRight: 4,
     marginTop: 16,
   }),
 
@@ -205,7 +211,7 @@ const styles = {
   }),
 
   settingInfo: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
     marginRight: 16,
   }),
 
@@ -216,7 +222,6 @@ const styles = {
     backgroundColor: '#666666',
     padding: 2,
     justifyContent: 'center',
-    cursor: 'pointer',
   }),
 
   toggleOn: new Style<View>({
@@ -227,7 +232,6 @@ const styles = {
     padding: 2,
     justifyContent: 'center',
     alignItems: 'flex-end',
-    cursor: 'pointer',
   }),
 
   toggleKnobOff: new Style<View>({

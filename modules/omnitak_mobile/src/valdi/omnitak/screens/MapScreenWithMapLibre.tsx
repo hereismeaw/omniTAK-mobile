@@ -5,6 +5,7 @@ import { systemFont } from 'valdi_core/src/SystemFont';
 import { takService } from '../services/TakService';
 import { parseCotXml, getAffiliation, getAffiliationColor } from '../services/CotParser';
 import { MapLibreView, MapMarker, MapCamera, MapTapEvent } from '../components/MapLibreView';
+import { Coordinates } from './EnhancedMapScreen';
 
 /**
  * @ViewModel
@@ -28,7 +29,7 @@ export interface MapScreenViewModel {
  * })
  */
 export interface MapScreenContext {
-  initialCenter?: { lat: number; lon: number };
+  initialCenter?: Coordinates;
   initialZoom?: number;
 }
 

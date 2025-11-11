@@ -240,13 +240,13 @@ struct CoTPosition: Identifiable, Equatable {
     }
 }
 
-// MARK: - CLLocationCoordinate2D Equatable Extension
+    // MARK: - CLLocationCoordinate2D Equatable Extension
 
-extension CLLocationCoordinate2D: Equatable {
-    public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
-        lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
+    extension CLLocationCoordinate2D: Equatable {
+        public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
+            lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
+        }
     }
-}
 
 // MARK: - Helper Extensions
 

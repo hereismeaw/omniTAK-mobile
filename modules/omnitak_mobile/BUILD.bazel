@@ -43,26 +43,27 @@ alias(
 
 # Objective-C wrapper for MapLibre GL Native
 # Provides SCMapLibreMapView custom view integration
-client_objc_library(
-    name = "ios_maplibre_wrapper",
-    srcs = ["ios/maplibre/SCMapLibreMapView.m"],
-    hdrs = ["ios/maplibre/SCMapLibreMapView.h"],
-    copts = [
-        "-fno-exceptions",
-        "-Wno-deprecated-declarations",
-    ],
-    sdk_frameworks = [
-        "UIKit",
-        "CoreLocation",
-        "QuartzCore",
-    ],
-    deps = [
-        "@valdi//valdi_core:valdi_core_objc",
-        # MapLibre would be added here when integrated via CocoaPods or SPM
-        # For now, it's expected to be available at link time
-    ],
-    visibility = ["//visibility:private"],
-)
+# TODO: Re-enable when MapLibre framework is integrated
+# client_objc_library(
+#     name = "ios_maplibre_wrapper",
+#     srcs = ["ios/maplibre/SCMapLibreMapView.m"],
+#     hdrs = ["ios/maplibre/SCMapLibreMapView.h"],
+#     copts = [
+#         "-fno-exceptions",
+#         "-Wno-deprecated-declarations",
+#     ],
+#     sdk_frameworks = [
+#         "UIKit",
+#         "CoreLocation",
+#         "QuartzCore",
+#     ],
+#     deps = [
+#         "@valdi//valdi_core:valdi_core_objc",
+#         # MapLibre would be added here when integrated via CocoaPods or SPM
+#         # For now, it's expected to be available at link time
+#     ],
+#     visibility = ["//visibility:private"],
+# )
 
 # Swift bridge between TypeScript and Rust FFI
 # Provides OmniTAKNativeBridge for calling Rust functions
@@ -135,26 +136,12 @@ alias(
     visibility = ["//visibility:private"],
 )
 
-# JNI C++ bridge for Android
+# JNI C++ bridge for Android (prebuilt)
 # Handles Kotlin <-> C FFI <-> Rust communication
-cc_library(
+# Note: Built separately with Android NDK and imported as prebuilt library
+cc_import(
     name = "android_jni_bridge",
-    srcs = ["android/native/omnitak_jni.cpp"],
-    hdrs = glob(["android/native/include/**/*.h"]),
-    copts = [
-        "-fno-exceptions",
-        "-DANDROID",
-        "-Os",
-        "-Wno-unused-variable",
-    ],
-    includes = ["android/native/include"],
-    linkopts = [
-        "-llog",  # Android logging
-        "-landroid",  # Android API
-    ],
-    deps = [
-        ":omnitak_mobile_android_rust",
-    ],
+    static_library = "android/native/lib/arm64-v8a/libomnitak_jni.a",
     alwayslink = True,
     visibility = ["//visibility:private"],
 )
@@ -165,8 +152,8 @@ kt_android_library(
     name = "android_native_bridge",
     srcs = ["android/native/OmniTAKNativeBridge.kt"],
     deps = [
-        "@maven//:androidx_core_core_ktx",
-        "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
+        "@android_mvn//:androidx_core_core_ktx",
+        "@android_mvn//:org_jetbrains_kotlin_kotlin_stdlib",
     ],
     visibility = ["//visibility:private"],
 )
@@ -174,15 +161,15 @@ kt_android_library(
 # Kotlin MapLibre wrapper
 # Provides MapLibreMapView custom view integration
 kt_android_library(
-    name = "android_maplibre_wrapper",
+    name = "android_maplibre_wrapper_kt",
     srcs = glob(["android/maplibre/**/*.kt"]),
     deps = [
-        "@maven//:androidx_core_core_ktx",
-        "@maven//:androidx_appcompat_appcompat",
-        "@maven//:org_jetbrains_kotlin_kotlin_stdlib",
+        "@android_mvn//:androidx_core_core_ktx",
+        "@android_mvn//:androidx_appcompat_appcompat",
+        "@android_mvn//:org_jetbrains_kotlin_kotlin_stdlib",
         # MapLibre dependencies would be added here
-        # "@maven//:org_maplibre_gl_android_sdk",
-        # "@maven//:org_maplibre_gl_android_plugin_annotation_v9",
+        # "@android_mvn//:org_maplibre_gl_android_sdk",
+        # "@android_mvn//:org_maplibre_gl_android_plugin_annotation_v9",
     ],
     visibility = ["//visibility:private"],
 )
@@ -217,13 +204,13 @@ valdi_module(
     ],
     # iOS-specific native dependencies
     ios_deps = [
-        ":ios_maplibre_wrapper",
+        # ":ios_maplibre_wrapper",  # TODO: Re-enable when MapLibre is integrated
         ":ios_native_bridge",
     ],
     # Android-specific native dependencies
     android_deps = [
         ":android_native_bridge",
-        ":android_maplibre_wrapper",
+        ":android_maplibre_wrapper_kt",
         ":android_jni_bridge",
     ],
     # Language configuration - use both Objective-C and Swift

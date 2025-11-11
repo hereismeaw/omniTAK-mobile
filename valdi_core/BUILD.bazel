@@ -272,7 +272,10 @@ swift_library(
     srcs = glob([
         "src/valdi_core/ios/swift/**/*.swift",
     ]),
-    copts = ["-Osize"],
+    copts = [
+        "-Osize",
+        "-suppress-warnings",
+    ],
     module_name = "ValdiCoreSwift",
     visibility = ["//visibility:public"],
     deps = [

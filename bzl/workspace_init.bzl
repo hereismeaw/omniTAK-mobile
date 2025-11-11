@@ -74,7 +74,10 @@ def _register_android_deps():
         "@rules_android//toolchains/android_sdk:android_sdk_tools",
     )
 
-    android_ndk_repository(name = "androidndk")
+    android_ndk_repository(
+        name = "androidndk",
+        path = "/Users/iesouskurios/Library/Android/sdk/ndk/27.1.12297006",
+    )
 
     native.register_toolchains("@androidndk//:all")
 
@@ -89,6 +92,7 @@ def _register_android_deps():
             "androidx.appcompat:appcompat-resources:1.2.0",
             "androidx.collection:collection:1.1.0",
             "androidx.constraintlayout:constraintlayout:2.1.4",
+            "androidx.core:core-ktx:1.7.0",
             "androidx.customview:customview:1.1.0",
             "androidx.dynamicanimation:dynamicanimation:1.0.0",
             "androidx.fragment:fragment:1.1.0",
@@ -109,6 +113,7 @@ def _register_android_deps():
             "io.reactivex.rxjava3:rxjava:3.1.0",
             "io.reactivex.rxjava3:rxkotlin:3.0.0",
             "javax.inject:javax.inject:1",
+            "org.jetbrains.kotlin:kotlin-stdlib:1.8.10",
             "org.junit.jupiter:junit-jupiter-engine:5.9.3",
             "org.junit.jupiter:junit-jupiter-params:5.9.3",
             "org.junit.platform:junit-platform-launcher:1.9.2",

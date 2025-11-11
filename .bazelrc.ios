@@ -2,7 +2,7 @@
 # Import this in your main .bazelrc with: try-import %workspace%/.bazelrc.ios
 
 # iOS minimum version
-build:ios --ios_minimum_os=14.0
+build:ios --ios_minimum_os=13.0
 
 # iOS CPU configurations
 build:ios_arm64 --cpu=ios_arm64

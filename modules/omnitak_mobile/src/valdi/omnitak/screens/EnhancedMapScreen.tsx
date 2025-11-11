@@ -1,12 +1,23 @@
 import { Component } from 'valdi_core/src/Component';
 import { Label, View } from 'valdi_tsx/src/NativeTemplateElements';
 import { Style } from 'valdi_core/src/Style';
-import { systemFont } from 'valdi_core/src/SystemFont';
+import { systemFont, systemBoldFont } from 'valdi_core/src/SystemFont';
 import { takService } from '../services/TakService';
 import { parseCotXml, getAffiliation, getAffiliationColor } from '../services/CotParser';
 import { MapLibreView, MapMarker, MapCamera, MapTapEvent } from '../components/MapLibreView';
 
 export type MeasureMode = 'none' | 'distance' | 'area';
+
+/**
+ * @ExportModel({
+ *   ios: 'Coordinates',
+ *   android: 'com.engindearing.omnitak.Coordinates'
+ * })
+ */
+export interface Coordinates {
+  lat: number;
+  lon: number;
+}
 
 /**
  * @ViewModel
@@ -22,10 +33,10 @@ export interface EnhancedMapScreenViewModel {
   markers: MapMarker[];
   camera: MapCamera;
   isLocked: boolean;
-  orientation: 'portrait' | 'landscape';
+  orientation: string;
   northUp: boolean;
-  measureMode: MeasureMode;
-  measurePoints: Array<{ lat: number; lon: number }>;
+  measureMode: string;
+  measurePoints: Coordinates[];
   measureDistance?: number;
 }
 
@@ -39,7 +50,7 @@ export interface EnhancedMapScreenViewModel {
 export interface EnhancedMapScreenContext {
   onOpenMenu?: () => void;
   onOverflowMenu?: () => void;
-  initialCenter?: { lat: number; lon: number };
+  initialCenter?: Coordinates;
   initialZoom?: number;
 }
 
@@ -99,7 +110,7 @@ export class EnhancedMapScreen extends Component<
           latitude: initialCenter?.lat || 38.8977,
           longitude: initialCenter?.lon || -77.0365,
           zoom: initialZoom || 10,
-          bearing: northUp ? 0 : camera?.bearing || 0,
+          bearing: 0,
         }}
         markers={markers}
         onCameraChanged={this.handleCameraChange.bind(this)}
@@ -112,7 +123,7 @@ export class EnhancedMapScreen extends Component<
         {/* Hamburger Menu Button - ATAK 3-bar style */}
         <view
           style={styles.menuButton}
-          onClick={this.handleOpenMenu.bind(this)}
+          onTap={this.handleOpenMenu.bind(this)}
         >
           <view style={styles.hamburgerIcon}>
             <view style={styles.hamburgerBar} />
@@ -125,7 +136,7 @@ export class EnhancedMapScreen extends Component<
         <view style={styles.toolbarCenter}>
           <label
             value="iTAK"
-            font={systemFont(18, 'bold')}
+            font={systemBoldFont(18)}
             color="#FFFC00"
           />
           {/* LED-style connection indicator */}
@@ -135,7 +146,7 @@ export class EnhancedMapScreen extends Component<
             />
             <label
               value={isConnected ? 'CONN' : 'DISC'}
-              font={systemFont(9, 'bold')}
+              font={systemBoldFont(9)}
               color={isConnected ? '#4CAF50' : '#FF5252'}
               marginLeft={6}
             />
@@ -145,7 +156,7 @@ export class EnhancedMapScreen extends Component<
         {/* Overflow Menu Button */}
         <view
           style={styles.overflowButton}
-          onClick={this.handleOverflowMenu.bind(this)}
+          onTap={this.handleOverflowMenu.bind(this)}
         >
           <label value="⋮" font={systemFont(24)} color="#FFFFFF" />
         </view>
@@ -167,7 +178,7 @@ export class EnhancedMapScreen extends Component<
         {measureMode !== 'none' && measureDistance && (
           <label
             value={`Distance: ${measureDistance.toFixed(2)}m`}
-            font={systemFont(12, 'bold')}
+            font={systemBoldFont(12)}
             color="#FFFC00"
             marginLeft={12}
           />
@@ -178,19 +189,16 @@ export class EnhancedMapScreen extends Component<
       <view style={styles.compassContainer}>
         <view
           style={styles.compassButton}
-          onClick={this.handleCompass.bind(this)}
+          onTap={this.handleCompass.bind(this)}
         >
           <label
             value="⬆"
             font={systemFont(24)}
             color="#FFFFFF"
-            style={{
-              transform: `rotate(${northUp ? 0 : -(camera?.bearing || 0)}deg)`,
-            }}
           />
           <label
             value="N"
-            font={systemFont(10, 'bold')}
+            font={systemBoldFont(10)}
             color="#FFFC00"
           />
         </view>
@@ -201,7 +209,7 @@ export class EnhancedMapScreen extends Component<
         {/* Orientation Toggle */}
         <view
           style={styles.controlButton}
-          onClick={this.handleOrientationToggle.bind(this)}
+          onTap={this.handleOrientationToggle.bind(this)}
         >
           <label
             value={orientation === 'portrait' ? '📱' : '🖥️'}
@@ -212,7 +220,7 @@ export class EnhancedMapScreen extends Component<
         {/* Zoom In */}
         <view
           style={styles.controlButton}
-          onClick={this.handleZoomIn.bind(this)}
+          onTap={this.handleZoomIn.bind(this)}
         >
           <label value="+" font={systemFont(24)} color="#FFFFFF" />
         </view>
@@ -220,7 +228,7 @@ export class EnhancedMapScreen extends Component<
         {/* Zoom Out */}
         <view
           style={styles.controlButton}
-          onClick={this.handleZoomOut.bind(this)}
+          onTap={this.handleZoomOut.bind(this)}
         >
           <label value="−" font={systemFont(24)} color="#FFFFFF" />
         </view>
@@ -228,7 +236,7 @@ export class EnhancedMapScreen extends Component<
         {/* Lock to Self */}
         <view
           style={isLocked ? styles.controlButtonActive : styles.controlButton}
-          onClick={this.handleToggleLock.bind(this)}
+          onTap={this.handleToggleLock.bind(this)}
         >
           <label
             value={isLocked ? '🔒' : '🔓'}
@@ -239,7 +247,7 @@ export class EnhancedMapScreen extends Component<
         {/* Center on Self */}
         <view
           style={styles.controlButton}
-          onClick={this.handleCenterOnSelf.bind(this)}
+          onTap={this.handleCenterOnSelf.bind(this)}
         >
           <label value="◎" font={systemFont(24)} color="#FFFFFF" />
         </view>
@@ -250,7 +258,7 @@ export class EnhancedMapScreen extends Component<
         {/* Measure Tool */}
         <view
           style={measureMode !== 'none' ? styles.actionButtonActive : styles.actionButton}
-          onClick={this.handleMeasureTool.bind(this)}
+          onTap={this.handleMeasureTool.bind(this)}
         >
           <label value="📏" font={systemFont(20)} />
           <label
@@ -264,7 +272,7 @@ export class EnhancedMapScreen extends Component<
         {/* Add Marker */}
         <view
           style={styles.actionButton}
-          onClick={this.handleAddMarker.bind(this)}
+          onTap={this.handleAddMarker.bind(this)}
         >
           <label value="📍" font={systemFont(20)} />
           <label
@@ -278,7 +286,7 @@ export class EnhancedMapScreen extends Component<
         {/* Draw */}
         <view
           style={styles.actionButton}
-          onClick={this.handleDraw.bind(this)}
+          onTap={this.handleDraw.bind(this)}
         >
           <label value="✏️" font={systemFont(20)} />
           <label
@@ -292,7 +300,7 @@ export class EnhancedMapScreen extends Component<
         {/* Search */}
         <view
           style={styles.actionButton}
-          onClick={this.handleSearch.bind(this)}
+          onTap={this.handleSearch.bind(this)}
         >
           <label value="🔍" font={systemFont(20)} />
           <label
@@ -309,7 +317,7 @@ export class EnhancedMapScreen extends Component<
         <view style={styles.measureInfo}>
           <label
             value={`Measure Mode: ${measureMode === 'distance' ? 'Distance' : 'Area'}`}
-            font={systemFont(14, 'bold')}
+            font={systemBoldFont(14)}
             color="#FFFC00"
           />
           <label
@@ -320,7 +328,7 @@ export class EnhancedMapScreen extends Component<
           />
           <view
             style={styles.measureClearButton}
-            onClick={this.handleClearMeasure.bind(this)}
+            onTap={this.handleClearMeasure.bind(this)}
           >
             <label
               value="Clear"
@@ -602,7 +610,8 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: 'rgba(30, 30, 30, 0.95)',
-    paddingHorizontal: 8,
+    paddingLeft: 8,
+    paddingRight: 8,
     zIndex: 100,
   }),
 
@@ -611,7 +620,6 @@ const styles = {
     height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
   }),
 
   // ATAK-style hamburger icon (3 horizontal bars)
@@ -631,7 +639,7 @@ const styles = {
   }),
 
   toolbarCenter: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -649,12 +657,7 @@ const styles = {
     height: 8,
     borderRadius: 4,
     backgroundColor: '#4CAF50',
-    shadowColor: '#4CAF50',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
     // Pulsing animation effect
-    animation: 'pulse 2s infinite',
   }),
 
   ledDisconnected: new Style<View>({
@@ -662,10 +665,6 @@ const styles = {
     height: 8,
     borderRadius: 4,
     backgroundColor: '#FF5252',
-    shadowColor: '#FF5252',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 3,
   }),
 
   overflowButton: new Style<View>({
@@ -673,7 +672,6 @@ const styles = {
     height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
   }),
 
   infoBar: new Style<View>({
@@ -685,8 +683,10 @@ const styles = {
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     borderRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingTop: 6,
+    paddingBottom: 6,
     zIndex: 90,
   }),
 
@@ -706,11 +706,6 @@ const styles = {
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: '#FFFC00',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    cursor: 'pointer',
   }),
 
   rightControls: new Style<View>({
@@ -718,7 +713,7 @@ const styles = {
     top: 170,
     right: 12,
     flexDirection: 'column',
-    gap: 8,
+    // gap removed - not supported by Valdi
     zIndex: 70,
   }),
 
@@ -731,11 +726,6 @@ const styles = {
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#3A3A3A',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    cursor: 'pointer',
   }),
 
   controlButtonActive: new Style<View>({
@@ -747,11 +737,6 @@ const styles = {
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: '#FFFC00',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    cursor: 'pointer',
   }),
 
   bottomControls: new Style<View>({
@@ -761,8 +746,9 @@ const styles = {
     right: 0,
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 12,
-    paddingHorizontal: 12,
+    // gap removed - not supported by Valdi
+    paddingLeft: 12,
+    paddingRight: 12,
     zIndex: 60,
   }),
 
@@ -775,11 +761,6 @@ const styles = {
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#3A3A3A',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    cursor: 'pointer',
   }),
 
   actionButtonActive: new Style<View>({
@@ -791,11 +772,6 @@ const styles = {
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: '#FFFC00',
-    shadowColor: '#FFFC00',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
-    cursor: 'pointer',
   }),
 
   measureInfo: new Style<View>({
@@ -813,13 +789,14 @@ const styles = {
 
   measureClearButton: new Style<View>({
     marginTop: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingTop: 6,
+    paddingBottom: 6,
+    paddingLeft: 12,
+    paddingRight: 12,
     backgroundColor: 'rgba(255, 82, 82, 0.2)',
     borderRadius: 4,
     borderWidth: 1,
     borderColor: '#FF5252',
     alignSelf: 'flex-start',
-    cursor: 'pointer',
   }),
 };

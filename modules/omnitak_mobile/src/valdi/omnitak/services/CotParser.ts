@@ -5,18 +5,30 @@
  * Supports all standard detail elements used by ATAK, WinTAK, and iTAK.
  */
 
+/**
+ * @ExportModel({
+ *   ios: 'CotEvent',
+ *   android: 'com.engindearing.omnitak.CotEvent'
+ * })
+ */
 export interface CotEvent {
   version: string; // Usually "2.0"
   uid: string; // Unique identifier
   type: string; // CoT type code (e.g., "a-f-G-E-S" for friendly ground equipment)
-  time: Date; // Time event was generated
-  start: Date; // Time event becomes valid
-  stale: Date; // Time event becomes stale
+  time: number; // Time event was generated (Unix timestamp in milliseconds)
+  start: number; // Time event becomes valid (Unix timestamp in milliseconds)
+  stale: number; // Time event becomes stale (Unix timestamp in milliseconds)
   how: string; // How the event was generated (e.g., "h-g-i-g-o" for GPS)
   point: CotPoint;
   detail?: CotDetail;
 }
 
+/**
+ * @ExportModel({
+ *   ios: 'CotPoint',
+ *   android: 'com.engindearing.omnitak.CotPoint'
+ * })
+ */
 export interface CotPoint {
   lat: number; // Latitude in degrees
   lon: number; // Longitude in degrees
@@ -25,6 +37,12 @@ export interface CotPoint {
   le: number; // Linear error in meters (vertical accuracy)
 }
 
+/**
+ * @ExportModel({
+ *   ios: 'CotDetail',
+ *   android: 'com.engindearing.omnitak.CotDetail'
+ * })
+ */
 export interface CotDetail {
   contact?: CotContact;
   group?: CotGroup;
@@ -33,33 +51,68 @@ export interface CotDetail {
   track?: CotTrack;
   link?: CotLink[];
   remarks?: string;
-  [key: string]: any; // Allow custom detail elements
 }
 
+/**
+ * @ExportModel({
+ *   ios: 'CotContact',
+ *   android: 'com.engindearing.omnitak.CotContact'
+ * })
+ */
 export interface CotContact {
   callsign: string;
   endpoint?: string; // IP:port for direct connection
 }
 
+/**
+ * @ExportModel({
+ *   ios: 'CotGroup',
+ *   android: 'com.engindearing.omnitak.CotGroup'
+ * })
+ */
 export interface CotGroup {
   name: string; // Team/group name
   role: string; // Role in team
 }
 
+/**
+ * @ExportModel({
+ *   ios: 'CotPrecisionLocation',
+ *   android: 'com.engindearing.omnitak.CotPrecisionLocation'
+ * })
+ */
 export interface CotPrecisionLocation {
   geopointsrc: string; // GPS, USER, etc.
   altsrc: string; // GPS, DTED, etc.
 }
 
+/**
+ * @ExportModel({
+ *   ios: 'CotStatus',
+ *   android: 'com.engindearing.omnitak.CotStatus'
+ * })
+ */
 export interface CotStatus {
   battery: number; // Battery percentage 0-100
 }
 
+/**
+ * @ExportModel({
+ *   ios: 'CotTrack',
+ *   android: 'com.engindearing.omnitak.CotTrack'
+ * })
+ */
 export interface CotTrack {
   speed: number; // Speed in m/s
   course: number; // Heading in degrees
 }
 
+/**
+ * @ExportModel({
+ *   ios: 'CotLink',
+ *   android: 'com.engindearing.omnitak.CotLink'
+ * })
+ */
 export interface CotLink {
   uid: string; // UID of linked event
   relation: string; // Relationship type (e.g., "p-p" for parent)
@@ -118,9 +171,9 @@ export function parseCotXml(xml: string): CotEvent | null {
       version: getAttr('event', 'version') || '2.0',
       uid,
       type,
-      time: new Date(time),
-      start: new Date(start),
-      stale: new Date(stale),
+      time: new Date(time).getTime(),
+      start: new Date(start).getTime(),
+      stale: new Date(stale).getTime(),
       how: how || '',
       point: {
         lat: parseFloat(lat),
@@ -177,7 +230,7 @@ export function serializeCotXml(event: CotEvent): string {
   const { version, uid, type, time, start, stale, how, point, detail } = event;
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<event version="${version}" uid="${uid}" type="${type}" time="${time.toISOString()}" start="${start.toISOString()}" stale="${stale.toISOString()}" how="${how}">
+<event version="${version}" uid="${uid}" type="${type}" time="${new Date(time).toISOString()}" start="${new Date(start).toISOString()}" stale="${new Date(stale).toISOString()}" how="${how}">
   <point lat="${point.lat}" lon="${point.lon}" hae="${point.hae}" ce="${point.ce}" le="${point.le}"/>`;
 
   if (detail) {
@@ -290,8 +343,8 @@ export function createSelfSACot(
   lon: number,
   hae: number = 0
 ): CotEvent {
-  const now = new Date();
-  const stale = new Date(now.getTime() + 60000); // Stale in 1 minute
+  const now = Date.now();
+  const stale = now + 60000; // Stale in 1 minute (Unix timestamp)
 
   return {
     version: '2.0',

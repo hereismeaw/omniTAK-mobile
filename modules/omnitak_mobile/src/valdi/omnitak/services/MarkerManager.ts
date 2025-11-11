@@ -108,7 +108,7 @@ export class MarkerManager {
     }
 
     const previousMarker = { ...existing };
-    const now = new Date();
+    const now = Date.now();
 
     // Update marker data
     existing.type = event.type;
@@ -134,7 +134,7 @@ export class MarkerManager {
       event: MarkerEvent.Updated,
       marker: existing,
       previousMarker,
-      timestamp: now,
+      timestamp: new Date(),
     });
 
     return existing;
@@ -345,10 +345,8 @@ export class MarkerManager {
    * Check for stale markers and update/remove them
    */
   private checkStaleMarkers(): void {
-    const now = new Date();
-    const removeThreshold = new Date(
-      now.getTime() - this.config.autoRemoveStaleAfter
-    );
+    const now = Date.now();
+    const removeThreshold = now - this.config.autoRemoveStaleAfter;
 
     const markersToRemove: string[] = [];
 
@@ -362,7 +360,7 @@ export class MarkerManager {
           event: MarkerEvent.Updated,
           marker,
           previousMarker,
-          timestamp: now,
+          timestamp: new Date(),
         });
       }
 

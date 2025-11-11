@@ -238,6 +238,7 @@ open class ValdiMarshaller {
         return try object.push(to: self)
     }
 
+    @available(iOS 13.0, *)
     public func pushPromise<T>(_ object: ValdiPromise<T>) throws -> Int {
         try object.push(to: self)
     }
@@ -338,6 +339,7 @@ open class ValdiMarshaller {
         return ValdiFunction(functionRef: functionRef)
     }
 
+    @available(iOS 13.0, *)
     public func getPromise<T>(_ index: Int) throws -> ValdiPromise<T> {
         return try ValdiPromise<T>(from: self, at: index)
     }
@@ -804,6 +806,7 @@ open class ValdiMarshaller {
     public func getOptionalData(_ index: Int) throws -> Data? {
         return try getOptional(index) { try getData($0) }
     }
+    @available(iOS 13.0, *)
     public func getOptionalPromise<T>(_ index: Int) throws -> ValdiPromise<T>? {
         return try getOptional(index) { try getPromise($0) }
     }
@@ -859,6 +862,7 @@ open class ValdiMarshaller {
     public func pushOptionalData(_ value: Data?) -> Int {
         return pushOptional(value) { pushData($0) }
     }
+    @available(iOS 13.0, *)
     public func pushOptionalPromise<T>(_ value: ValdiPromise<T>?) throws -> Int {
         return try pushOptional(value) { try pushPromise($0) }
     }

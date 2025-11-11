@@ -65,9 +65,9 @@ export interface MapMarker {
 
   // Lifecycle
   state: MarkerState;
-  created: Date;
-  updated: Date;
-  stale: Date;
+  created: number; // Unix timestamp in milliseconds
+  updated: number; // Unix timestamp in milliseconds
+  stale: number; // Unix timestamp in milliseconds
 
   // Rendering hints
   zoomLevel?: MarkerZoomLevel;
@@ -258,7 +258,7 @@ export interface MarkerFilter {
  * Convert CoT event to map marker
  */
 export function cotToMarker(event: CotEvent, options?: MarkerOptions): MapMarker {
-  const now = new Date();
+  const now = Date.now();
   const parts = event.type.split('-');
   const dimension = parts[0] || 'g';
   const affiliation = parts[1] || 'u';

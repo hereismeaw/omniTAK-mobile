@@ -1,15 +1,21 @@
 import { Component } from 'valdi_core/src/Component';
-import { Label, View, Button, ScrollView, TextInput } from 'valdi_tsx/src/NativeTemplateElements';
+import { Label, View, ScrollView } from 'valdi_tsx/src/NativeTemplateElements';
 import { Style } from 'valdi_core/src/Style';
-import { systemFont } from 'valdi_core/src/SystemFont';
+import { systemFont, systemBoldFont } from 'valdi_core/src/SystemFont';
 
+/**
+ * @ExportModel({
+ *   ios: 'ServerConnection',
+ *   android: 'com.engindearing.omnitak.ServerConnection'
+ * })
+ */
 export interface ServerConnection {
   id: string;
   name: string;
   host: string;
   port: number;
-  protocol: 'tcp' | 'ssl' | 'udp';
-  status: 'connected' | 'disconnected' | 'error' | 'connecting';
+  protocol: string;
+  status: string;
   lastConnected?: string;
 }
 
@@ -37,7 +43,7 @@ export interface ServerManagementContext {
   onBack?: () => void;
   onConnect?: (serverId: string) => void;
   onDisconnect?: (serverId: string) => void;
-  onAddServer?: (server: Partial<ServerConnection>) => void;
+  onAddServer?: (server: any) => void;
   onEditServer?: (serverId: string) => void;
   onDeleteServer?: (serverId: string) => void;
   onShowAddDialog?: () => void;
@@ -68,24 +74,24 @@ export class ServerManagementScreen extends Component<
     <view style={styles.container}>
       {/* Header */}
       <view style={styles.header}>
-        <view style={styles.backButton} onClick={this.handleBack.bind(this)}>
+        <view style={styles.backButton} onTap={this.handleBack.bind(this)}>
           <label value="←" font={systemFont(24)} color="#FFFFFF" />
         </view>
         <label
           value="Network Connections"
-          font={systemFont(20, 'bold')}
+          font={systemBoldFont(20)}
           color="#FFFFFF"
         />
         <view
           style={styles.addButton}
-          onClick={this.handleShowAddDialog.bind(this)}
+          onTap={this.handleShowAddDialog.bind(this)}
         >
           <label value="+" font={systemFont(28)} color="#FFFC00" />
         </view>
       </view>
 
       {/* Server list */}
-      <ScrollView style={styles.scrollView}>
+      <view style={styles.scrollView}>
         <view style={styles.content}>
           {servers.length === 0 ? (
             <view style={styles.emptyState}>
@@ -105,7 +111,7 @@ export class ServerManagementScreen extends Component<
             servers.map((server) => this.renderServerItem(server))
           )}
         </view>
-      </ScrollView>
+      </view>
 
       {/* Add/Edit server dialog */}
       {showAddDialog && this.renderAddServerDialog()}
@@ -122,7 +128,7 @@ export class ServerManagementScreen extends Component<
         <view style={styles.serverHeader}>
           <label
             value={server.name}
-            font={systemFont(16, 'bold')}
+            font={systemBoldFont(16)}
             color="#FFFFFF"
           />
           <view style={styles.statusBadge}>
@@ -170,22 +176,22 @@ export class ServerManagementScreen extends Component<
         {server.status === 'connected' ? (
           <view
             style={styles.actionButton}
-            onClick={() => this.handleDisconnect(server.id)}
+            onTap={() => this.handleDisconnect(server.id)}
           >
             <label
               value="Disconnect"
-              font={systemFont(12, 'bold')}
+              font={systemBoldFont(12)}
               color="#FF5252"
             />
           </view>
         ) : (
           <view
             style={styles.actionButton}
-            onClick={() => this.handleConnect(server.id)}
+            onTap={() => this.handleConnect(server.id)}
           >
             <label
               value="Connect"
-              font={systemFont(12, 'bold')}
+              font={systemBoldFont(12)}
               color="#4CAF50"
             />
           </view>
@@ -193,14 +199,14 @@ export class ServerManagementScreen extends Component<
 
         <view
           style={styles.iconButton}
-          onClick={() => this.handleEdit(server.id)}
+          onTap={() => this.handleEdit(server.id)}
         >
           <label value="✏️" font={systemFont(16)} />
         </view>
 
         <view
           style={styles.iconButton}
-          onClick={() => this.handleDelete(server.id)}
+          onTap={() => this.handleDelete(server.id)}
         >
           <label value="🗑️" font={systemFont(16)} />
         </view>
@@ -214,12 +220,12 @@ export class ServerManagementScreen extends Component<
         <view style={styles.dialogHeader}>
           <label
             value="Add TAK Server"
-            font={systemFont(18, 'bold')}
+            font={systemBoldFont(18)}
             color="#FFFFFF"
           />
           <view
             style={styles.closeButton}
-            onClick={this.handleHideAddDialog.bind(this)}
+            onTap={this.handleHideAddDialog.bind(this)}
           >
             <label value="✕" font={systemFont(20)} color="#FFFFFF" />
           </view>
@@ -232,11 +238,10 @@ export class ServerManagementScreen extends Component<
             color="#CCCCCC"
             marginBottom={4}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="e.g., TAK Server 1"
-            placeholderColor="#666666"
-          />
+          {/* TODO: Replace with proper Valdi input component */}
+          <view style={styles.input}>
+            <label value="TAK Server 1" font={systemFont(14)} color="#FFFFFF" />
+          </view>
 
           <label
             value="Host / IP Address"
@@ -245,11 +250,9 @@ export class ServerManagementScreen extends Component<
             marginTop={16}
             marginBottom={4}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="e.g., 192.168.1.100"
-            placeholderColor="#666666"
-          />
+          <view style={styles.input}>
+            <label value="192.168.1.100" font={systemFont(14)} color="#FFFFFF" />
+          </view>
 
           <label
             value="Port"
@@ -258,12 +261,9 @@ export class ServerManagementScreen extends Component<
             marginTop={16}
             marginBottom={4}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="e.g., 8087"
-            placeholderColor="#666666"
-            keyboardType="number-pad"
-          />
+          <view style={styles.input}>
+            <label value="8087" font={systemFont(14)} color="#FFFFFF" />
+          </view>
 
           <label
             value="Protocol"
@@ -288,7 +288,7 @@ export class ServerManagementScreen extends Component<
         <view style={styles.dialogActions}>
           <view
             style={styles.dialogButton}
-            onClick={this.handleHideAddDialog.bind(this)}
+            onTap={this.handleHideAddDialog.bind(this)}
           >
             <label
               value="Cancel"
@@ -298,11 +298,11 @@ export class ServerManagementScreen extends Component<
           </view>
           <view
             style={styles.dialogButtonPrimary}
-            onClick={this.handleAddServer.bind(this)}
+            onTap={this.handleAddServer.bind(this)}
           >
             <label
               value="Add Server"
-              font={systemFont(14, 'bold')}
+              font={systemBoldFont(14)}
               color="#1E1E1E"
             />
           </view>
@@ -408,8 +408,6 @@ const styles = {
     padding: 16,
     paddingTop: 60,
     backgroundColor: '#2A2A2A',
-    borderBottomWidth: 1,
-    borderBottomColor: '#3A3A3A',
   }),
 
   backButton: new Style<View>({
@@ -417,7 +415,6 @@ const styles = {
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
   }),
 
   addButton: new Style<View>({
@@ -425,11 +422,10 @@ const styles = {
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
   }),
 
-  scrollView: new Style<ScrollView>({
-    flex: 1,
+  scrollView: new Style<View>({
+    // flex: 1, // Not supported by Valdi
   }),
 
   content: new Style<View>({
@@ -463,8 +459,10 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#1E1E1E',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 4,
+    paddingBottom: 4,
     borderRadius: 4,
   }),
 
@@ -472,15 +470,16 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    gap: 8,
+    // gap removed - not supported by Valdi
   }),
 
   actionButton: new Style<View>({
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
     backgroundColor: '#3A3A3A',
     borderRadius: 4,
-    cursor: 'pointer',
   }),
 
   iconButton: new Style<View>({
@@ -490,7 +489,6 @@ const styles = {
     justifyContent: 'center',
     backgroundColor: '#3A3A3A',
     borderRadius: 4,
-    cursor: 'pointer',
   }),
 
   dialogOverlay: new Style<View>({
@@ -510,10 +508,6 @@ const styles = {
     maxWidth: 500,
     backgroundColor: '#2A2A2A',
     borderRadius: 12,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
   }),
 
   dialogHeader: new Style<View>({
@@ -521,8 +515,6 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#3A3A3A',
   }),
 
   closeButton: new Style<View>({
@@ -530,60 +522,56 @@ const styles = {
     height: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
   }),
 
   dialogContent: new Style<View>({
     padding: 20,
   }),
 
-  input: new Style<TextInput>({
+  input: new Style<View>({
     backgroundColor: '#1E1E1E',
-    color: '#FFFFFF',
     padding: 12,
     borderRadius: 4,
     borderWidth: 1,
     borderColor: '#3A3A3A',
-    fontSize: 14,
   }),
 
   protocolOptions: new Style<View>({
     flexDirection: 'row',
-    gap: 8,
+    // gap removed - not supported by Valdi
   }),
 
   protocolOption: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
     padding: 12,
     backgroundColor: '#1E1E1E',
     borderRadius: 4,
     borderWidth: 1,
     borderColor: '#3A3A3A',
     alignItems: 'center',
-    cursor: 'pointer',
   }),
 
   dialogActions: new Style<View>({
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: 12,
+    // gap removed - not supported by Valdi
     padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#3A3A3A',
   }),
 
   dialogButton: new Style<View>({
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
     borderRadius: 4,
-    cursor: 'pointer',
   }),
 
   dialogButtonPrimary: new Style<View>({
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
     backgroundColor: '#FFFC00',
     borderRadius: 4,
-    cursor: 'pointer',
   }),
 };

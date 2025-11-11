@@ -18,7 +18,8 @@ def setup_dependencies(workspace_root = None):
     native.android_sdk_repository(
         name = "androidsdk",
         api_level = 35,  # The API version for Android compileSdk
-        build_tools_version = "34.0.0",
+        build_tools_version = "35.0.0",
+        path = "/Users/iesouskurios/Library/Android/sdk",
     )
 
     http_archive(

@@ -1,7 +1,7 @@
 import { Component } from 'valdi_core/src/Component';
 import { Label, View } from 'valdi_tsx/src/NativeTemplateElements';
 import { Style } from 'valdi_core/src/Style';
-import { systemFont } from 'valdi_core/src/SystemFont';
+import { systemFont, systemBoldFont } from 'valdi_core/src/SystemFont';
 import {
   multiServerFederation,
   FederatedServer,
@@ -82,7 +82,7 @@ export class FederatedServerScreen extends Component<
       <view style={styles.header}>
         <view
           style={styles.backButton}
-          onClick={this.handleBack.bind(this)}
+          onTap={this.handleBack.bind(this)}
         >
           <label value="←" font={systemFont(24)} color="#FFFFFF" />
         </view>
@@ -90,7 +90,7 @@ export class FederatedServerScreen extends Component<
         <view style={styles.headerContent}>
           <label
             value="Federated Servers"
-            font={systemFont(20, 'bold')}
+            font={systemBoldFont(20)}
             color="#FFFC00"
           />
           <label
@@ -103,7 +103,7 @@ export class FederatedServerScreen extends Component<
 
         <view
           style={styles.addButton}
-          onClick={this.handleAddServer.bind(this)}
+          onTap={this.handleAddServer.bind(this)}
         >
           <label value="+" font={systemFont(28)} color="#FFFC00" />
         </view>
@@ -115,7 +115,7 @@ export class FederatedServerScreen extends Component<
         <view style={styles.infoBannerText}>
           <label
             value="Connect to multiple TAK servers simultaneously"
-            font={systemFont(11, 'bold')}
+            font={systemBoldFont(11)}
             color="#FFFFFF"
           />
           <label
@@ -131,12 +131,12 @@ export class FederatedServerScreen extends Component<
       <view style={styles.quickActions}>
         <view
           style={styles.actionButton}
-          onClick={this.handleConnectAll.bind(this)}
+          onTap={this.handleConnectAll.bind(this)}
         >
           <label value="⚡" font={systemFont(18)} />
           <label
             value="Connect All"
-            font={systemFont(12, 'bold')}
+            font={systemBoldFont(12)}
             color="#4CAF50"
             marginLeft={6}
           />
@@ -144,12 +144,12 @@ export class FederatedServerScreen extends Component<
 
         <view
           style={styles.actionButton}
-          onClick={this.handleDisconnectAll.bind(this)}
+          onTap={this.handleDisconnectAll.bind(this)}
         >
           <label value="⏸" font={systemFont(18)} />
           <label
             value="Disconnect All"
-            font={systemFont(12, 'bold')}
+            font={systemBoldFont(12)}
             color="#FF5252"
             marginLeft={6}
           />
@@ -169,7 +169,7 @@ export class FederatedServerScreen extends Component<
       <label value="📡" font={systemFont(48)} />
       <label
         value="No Servers Configured"
-        font={systemFont(18, 'bold')}
+        font={systemBoldFont(18)}
         color="#FFFFFF"
         marginTop={16}
       />
@@ -188,7 +188,7 @@ export class FederatedServerScreen extends Component<
     <view
       key={server.id}
       style={isSelected ? styles.serverCardActive : styles.serverCard}
-      onClick={() => this.handleSelectServer(server.id)}
+      onTap={() => this.handleSelectServer(server.id)}
     >
       {/* Server Header */}
       <view style={styles.serverHeader}>
@@ -201,7 +201,7 @@ export class FederatedServerScreen extends Component<
           <view style={styles.serverInfo}>
             <label
               value={server.name}
-              font={systemFont(16, 'bold')}
+              font={systemBoldFont(16)}
               color="#FFFFFF"
             />
             <label
@@ -216,11 +216,11 @@ export class FederatedServerScreen extends Component<
         {/* Connection Toggle */}
         <view
           style={styles.connectionButton}
-          onClick={(e) => this.handleToggleConnection(server.id, e)}
+          onTap={(e) => this.handleToggleConnection(server.id, e)}
         >
           <label
             value={server.status === 'connected' ? 'Disconnect' : 'Connect'}
-            font={systemFont(12, 'bold')}
+            font={systemBoldFont(12)}
             color={server.status === 'connected' ? '#FF5252' : '#4CAF50'}
           />
         </view>
@@ -238,7 +238,7 @@ export class FederatedServerScreen extends Component<
             />
             <label
               value={`${server.config.protocol} ${server.config.useTls ? '(TLS)' : ''}`}
-              font={systemFont(11, 'bold')}
+              font={systemBoldFont(11)}
               color="#FFFFFF"
               marginLeft={8}
             />
@@ -248,7 +248,7 @@ export class FederatedServerScreen extends Component<
           <view style={styles.policySection}>
             <label
               value="Data Sharing Policy"
-              font={systemFont(13, 'bold')}
+              font={systemBoldFont(13)}
               color="#FFFC00"
               marginBottom={8}
             />
@@ -261,13 +261,13 @@ export class FederatedServerScreen extends Component<
                     ? styles.toggleOn
                     : styles.toggleOff
                 }
-                onClick={() =>
+                onTap={() =>
                   this.handleToggleBlueTeam(server.id, !server.policy.blueTeamOnly)
                 }
               >
                 <label
                   value={server.policy.blueTeamOnly ? '✓' : '○'}
-                  font={systemFont(12, 'bold')}
+                  font={systemBoldFont(12)}
                   color={server.policy.blueTeamOnly ? '#4CAF50' : '#666666'}
                 />
               </view>
@@ -287,13 +287,13 @@ export class FederatedServerScreen extends Component<
                     ? styles.toggleOn
                     : styles.toggleOff
                 }
-                onClick={() =>
+                onTap={() =>
                   this.handleToggleAutoShare(server.id, !server.policy.autoShare)
                 }
               >
                 <label
                   value={server.policy.autoShare ? '✓' : '○'}
-                  font={systemFont(12, 'bold')}
+                  font={systemBoldFont(12)}
                   color={server.policy.autoShare ? '#4CAF50' : '#666666'}
                 />
               </view>
@@ -309,7 +309,7 @@ export class FederatedServerScreen extends Component<
             <view style={styles.typeSection}>
               <label
                 value="Receive:"
-                font={systemFont(10, 'bold')}
+                font={systemBoldFont(10)}
                 color="#999999"
                 marginBottom={4}
               />
@@ -322,7 +322,7 @@ export class FederatedServerScreen extends Component<
             <view style={styles.typeSection}>
               <label
                 value="Send:"
-                font={systemFont(10, 'bold')}
+                font={systemBoldFont(10)}
                 color="#999999"
                 marginBottom={4}
               />
@@ -336,22 +336,22 @@ export class FederatedServerScreen extends Component<
           <view style={styles.actionRow}>
             <view
               style={styles.editButton}
-              onClick={() => this.handleEditPolicy(server.id)}
+              onTap={() => this.handleEditPolicy(server.id)}
             >
               <label
                 value="Edit Policy"
-                font={systemFont(11, 'bold')}
+                font={systemBoldFont(11)}
                 color="#FFFC00"
               />
             </view>
 
             <view
               style={styles.deleteButton}
-              onClick={() => this.handleDeleteServer(server.id)}
+              onTap={() => this.handleDeleteServer(server.id)}
             >
               <label
                 value="Remove"
-                font={systemFont(11, 'bold')}
+                font={systemBoldFont(11)}
                 color="#FF5252"
               />
             </view>
@@ -361,12 +361,12 @@ export class FederatedServerScreen extends Component<
     </view>;
   }
 
-  private renderTypeChips(types: DataType[]): void {
+  private renderTypeChips(types: string[]): void {
     types.forEach((type) => {
       <view key={type} style={styles.typeChip}>
         <label
           value={type}
-          font={systemFont(9, 'bold')}
+          font={systemBoldFont(9)}
           color="#FFFC00"
         />
       </view>;
@@ -477,8 +477,6 @@ const styles = {
     padding: 16,
     paddingTop: 60,
     backgroundColor: '#2A2A2A',
-    borderBottomWidth: 2,
-    borderBottomColor: '#FFFC00',
   }),
 
   backButton: new Style<View>({
@@ -486,11 +484,10 @@ const styles = {
     height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
   }),
 
   headerContent: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
     marginLeft: 8,
   }),
 
@@ -499,14 +496,14 @@ const styles = {
     height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
   }),
 
   infoBanner: new Style<View>({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
-    marginHorizontal: 16,
+    marginLeft: 16,
+    marginRight: 16,
     marginTop: 16,
     backgroundColor: 'rgba(75, 175, 255, 0.1)',
     borderRadius: 8,
@@ -515,17 +512,17 @@ const styles = {
   }),
 
   infoBannerText: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
   }),
 
   quickActions: new Style<View>({
     flexDirection: 'row',
-    gap: 12,
+    // gap removed - not supported by Valdi
     padding: 16,
   }),
 
   actionButton: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -534,17 +531,16 @@ const styles = {
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#3A3A3A',
-    cursor: 'pointer',
   }),
 
   serverList: new Style<View>({
-    flex: 1,
-    paddingHorizontal: 16,
-    overflowY: 'auto',
+    // flex: 1, // Not supported by Valdi
+    paddingLeft: 16,
+    paddingRight: 16,
   }),
 
   emptyState: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
     alignItems: 'center',
     justifyContent: 'center',
     padding: 32,
@@ -557,7 +553,6 @@ const styles = {
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#3A3A3A',
-    cursor: 'pointer',
   }),
 
   serverCardActive: new Style<View>({
@@ -567,7 +562,6 @@ const styles = {
     borderRadius: 8,
     borderWidth: 2,
     borderColor: '#FFFC00',
-    cursor: 'pointer',
   }),
 
   serverHeader: new Style<View>({
@@ -577,10 +571,10 @@ const styles = {
   }),
 
   serverHeaderLeft: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    // gap removed - not supported by Valdi
   }),
 
   ledConnected: new Style<View>({
@@ -588,10 +582,6 @@ const styles = {
     height: 12,
     borderRadius: 6,
     backgroundColor: '#4CAF50',
-    shadowColor: '#4CAF50',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
   }),
 
   ledConnecting: new Style<View>({
@@ -599,10 +589,6 @@ const styles = {
     height: 12,
     borderRadius: 6,
     backgroundColor: '#FFA500',
-    shadowColor: '#FFA500',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
   }),
 
   ledError: new Style<View>({
@@ -610,10 +596,6 @@ const styles = {
     height: 12,
     borderRadius: 6,
     backgroundColor: '#FF5252',
-    shadowColor: '#FF5252',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
   }),
 
   ledDisconnected: new Style<View>({
@@ -626,24 +608,23 @@ const styles = {
   }),
 
   serverInfo: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
   }),
 
   connectionButton: new Style<View>({
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
+    paddingLeft: 16,
+    paddingRight: 16,
     backgroundColor: 'rgba(255, 252, 0, 0.1)',
     borderRadius: 6,
     borderWidth: 1,
     borderColor: 'rgba(255, 252, 0, 0.3)',
-    cursor: 'pointer',
   }),
 
   serverDetails: new Style<View>({
     marginTop: 16,
     paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#3A3A3A',
   }),
 
   detailRow: new Style<View>({
@@ -676,7 +657,6 @@ const styles = {
     borderColor: '#4CAF50',
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
   }),
 
   toggleOff: new Style<View>({
@@ -688,7 +668,6 @@ const styles = {
     borderColor: '#666666',
     alignItems: 'center',
     justifyContent: 'center',
-    cursor: 'pointer',
   }),
 
   typeSection: new Style<View>({
@@ -698,12 +677,14 @@ const styles = {
   typeChips: new Style<View>({
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    // gap removed - not supported by Valdi
   }),
 
   typeChip: new Style<View>({
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingTop: 4,
+    paddingBottom: 4,
+    paddingLeft: 8,
+    paddingRight: 8,
     backgroundColor: 'rgba(255, 252, 0, 0.1)',
     borderRadius: 4,
     borderWidth: 1,
@@ -712,29 +693,27 @@ const styles = {
 
   actionRow: new Style<View>({
     flexDirection: 'row',
-    gap: 12,
+    // gap removed - not supported by Valdi
     marginTop: 16,
   }),
 
   editButton: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
     padding: 10,
     backgroundColor: 'rgba(255, 252, 0, 0.1)',
     borderRadius: 6,
     borderWidth: 1,
     borderColor: '#FFFC00',
     alignItems: 'center',
-    cursor: 'pointer',
   }),
 
   deleteButton: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
     padding: 10,
     backgroundColor: 'rgba(255, 82, 82, 0.1)',
     borderRadius: 6,
     borderWidth: 1,
     borderColor: '#FF5252',
     alignItems: 'center',
-    cursor: 'pointer',
   }),
 };

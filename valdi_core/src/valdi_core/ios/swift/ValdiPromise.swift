@@ -2,6 +2,7 @@ import Foundation
 import ValdiCoreCPP
 
 // The Swift ValdiPromise class is a wrapper of a C++ Valdi::Promise pointer
+@available(iOS 13.0, *)
 public class ValdiPromise<T> : ValdiMarshallableObject {
 
     // This is a retained pointer that needs to be released
@@ -17,6 +18,7 @@ public class ValdiPromise<T> : ValdiMarshallableObject {
     }
 
     // The awaitable `value` property asynchronously returns the promise result
+    @available(iOS 13.0, *)
     public var value: T {
         get async throws {
             return try await withCheckedThrowingContinuation { continuation in
@@ -55,6 +57,7 @@ public class ValdiPromise<T> : ValdiMarshallableObject {
 }
 
     // The Swift ValdiResolvablePromise class is backed by a C++ ResolvablePromise instance
+@available(iOS 13.0, *)
 public class ValdiResolvablePromise<T> : ValdiPromise<T> {
 
     public required init(from marshaller: ValdiMarshaller, at objectIndex: Int) throws {

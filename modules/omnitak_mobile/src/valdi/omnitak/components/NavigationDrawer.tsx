@@ -1,7 +1,7 @@
 import { Component } from 'valdi_core/src/Component';
-import { Label, View, Button } from 'valdi_tsx/src/NativeTemplateElements';
+import { Label, View } from 'valdi_tsx/src/NativeTemplateElements';
 import { Style } from 'valdi_core/src/Style';
-import { systemFont } from 'valdi_core/src/SystemFont';
+import { systemFont, systemBoldFont } from 'valdi_core/src/SystemFont';
 
 export type NavigationItem = 'map' | 'settings' | 'servers' | 'plugins' | 'tools' | 'about';
 
@@ -14,7 +14,7 @@ export type NavigationItem = 'map' | 'settings' | 'servers' | 'plugins' | 'tools
  */
 export interface NavigationDrawerViewModel {
   isOpen: boolean;
-  currentScreen: NavigationItem;
+  currentScreen: string;
   userName: string;
   userCallsign: string;
   connectionStatus: string;
@@ -28,7 +28,7 @@ export interface NavigationDrawerViewModel {
  * })
  */
 export interface NavigationDrawerContext {
-  onNavigate?: (screen: NavigationItem) => void;
+  onNavigate?: (screen: string) => void;
   onClose?: () => void;
 }
 
@@ -56,11 +56,11 @@ export class NavigationDrawer extends Component<
       return;
     }
 
-    <view style={styles.overlay} onClick={this.handleOverlayClick.bind(this)}>
+    <view style={styles.overlay} onTap={this.handleOverlayClick.bind(this)}>
       {/* Drawer panel with slide-in animation */}
       <view
         style={isOpen ? styles.drawerOpen : styles.drawer}
-        onClick={this.handleDrawerClick.bind(this)}
+        onTap={this.handleDrawerClick.bind(this)}
       >
         {/* Header with user info - ATAK Style */}
         <view style={styles.header}>
@@ -68,7 +68,7 @@ export class NavigationDrawer extends Component<
           <view style={styles.logoContainer}>
             <label
               value="iTAK"
-              font={systemFont(24, 'bold')}
+              font={systemBoldFont(24)}
               color="#FFFC00"
             />
             <view style={styles.logoUnderline} />
@@ -84,7 +84,7 @@ export class NavigationDrawer extends Component<
             <view>
               <label
                 value={userCallsign || 'ALPHA-1'}
-                font={systemFont(14, 'bold')}
+                font={systemBoldFont(14)}
                 color="#FFFFFF"
               />
               <label
@@ -104,21 +104,17 @@ export class NavigationDrawer extends Component<
                 height={10}
                 borderRadius={5}
                 backgroundColor={this.getConnectionColor(connectionStatus)}
-                shadowColor={this.getConnectionColor(connectionStatus)}
-                shadowOffset={{ width: 0, height: 0 }}
-                shadowOpacity={0.8}
-                shadowRadius={4}
               />
             </view>
             <view style={styles.connectionText}>
               <label
                 value="STATUS"
-                font={systemFont(8, 'bold')}
+                font={systemBoldFont(8)}
                 color="#999999"
               />
               <label
                 value={this.getConnectionText(connectionStatus)}
-                font={systemFont(11, 'bold')}
+                font={systemBoldFont(11)}
                 color={this.getConnectionColor(connectionStatus)}
                 marginTop={2}
               />
@@ -163,7 +159,7 @@ export class NavigationDrawer extends Component<
   ): void {
     <view
       style={isActive ? styles.menuItemActive : styles.menuItem}
-      onClick={() => this.handleNavigate(screen)}
+      onTap={() => this.handleNavigate(screen)}
     >
       <label
         value={icon}
@@ -172,7 +168,7 @@ export class NavigationDrawer extends Component<
       />
       <label
         value={title}
-        font={systemFont(14, isActive ? 'bold' : 'regular')}
+        font={isActive ? systemBoldFont(14) : systemFont(14)}
         color={isActive ? '#FFFC00' : '#FFFFFF'}
       />
     </view>;
@@ -237,7 +233,6 @@ const styles = {
     bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     zIndex: 1000,
-    animation: 'fadeIn 0.3s ease-in-out',
   }),
 
   drawer: new Style<View>({
@@ -248,13 +243,6 @@ const styles = {
     width: 280,
     backgroundColor: '#1E1E1E',
     flexDirection: 'column',
-    shadowColor: '#000000',
-    shadowOffset: { width: 2, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    borderRightWidth: 1,
-    borderRightColor: '#FFFC00',
-    transition: 'left 0.3s ease-in-out',
   }),
 
   drawerOpen: new Style<View>({
@@ -265,21 +253,12 @@ const styles = {
     width: 280,
     backgroundColor: '#1E1E1E',
     flexDirection: 'column',
-    shadowColor: '#000000',
-    shadowOffset: { width: 4, height: 0 },
-    shadowOpacity: 0.7,
-    shadowRadius: 16,
-    borderRightWidth: 2,
-    borderRightColor: '#FFFC00',
-    transition: 'left 0.3s ease-in-out',
   }),
 
   header: new Style<View>({
     padding: 20,
     paddingTop: 60, // Account for status bar
     backgroundColor: '#2A2A2A',
-    borderBottomWidth: 2,
-    borderBottomColor: '#FFFC00',
   }),
 
   logoContainer: new Style<View>({
@@ -320,11 +299,11 @@ const styles = {
   }),
 
   connectionText: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
   }),
 
   menuItems: new Style<View>({
-    flex: 1,
+    // flex: 1, // Not supported by Valdi
     paddingTop: 8,
   }),
 
@@ -333,7 +312,7 @@ const styles = {
     alignItems: 'center',
     padding: 16,
     paddingLeft: 20,
-    cursor: 'pointer',
+//     cursor removed - not supported
   }),
 
   menuItemActive: new Style<View>({
@@ -342,22 +321,20 @@ const styles = {
     padding: 16,
     paddingLeft: 20,
     backgroundColor: '#333333',
-    borderLeftWidth: 4,
-    borderLeftColor: '#FFFC00',
-    cursor: 'pointer',
+//     cursor removed - not supported
   }),
 
   divider: new Style<View>({
     height: 1,
     backgroundColor: '#3A3A3A',
-    marginVertical: 8,
-    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 8,
+    marginLeft: 16,
+    marginRight: 16,
   }),
 
   footer: new Style<View>({
     padding: 16,
     alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: '#3A3A3A',
   }),
 };

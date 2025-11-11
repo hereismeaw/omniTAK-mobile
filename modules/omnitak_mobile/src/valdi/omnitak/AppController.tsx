@@ -15,7 +15,7 @@ import { PluginManagementScreen, Plugin } from './screens/PluginManagementScreen
  * })
  */
 export interface AppControllerViewModel {
-  currentScreen: NavigationItem;
+  currentScreen: string;
   drawerOpen: boolean;
   userName: string;
   userCallsign: string;
@@ -31,7 +31,7 @@ export interface AppControllerViewModel {
   // Plugin data
   installedPlugins: Plugin[];
   availablePlugins: Plugin[];
-  selectedPluginTab: 'installed' | 'available';
+  selectedPluginTab: string;
 
   // Map data
   markerCount: number;
@@ -81,7 +81,7 @@ export class AppController extends Component<
     </view>;
   }
 
-  private renderCurrentScreen(screen: NavigationItem): void {
+  private renderCurrentScreen(screen: string): void {
     switch (screen) {
       case 'map':
         this.renderMapScreen();
@@ -108,35 +108,27 @@ export class AppController extends Component<
 
   private renderMapScreen(): void {
     <EnhancedMapScreen
-      viewModel={{
-        markerCount: this.viewModel.markerCount,
-        lastUpdate: this.viewModel.lastUpdate,
-        isConnected: this.viewModel.isConnected,
-        markers: [],
-        camera: {
-          latitude: 38.8977,
-          longitude: -77.0365,
-          zoom: 10,
-          bearing: 0,
-        },
-        isLocked: false,
-        orientation: 'portrait',
-        northUp: true,
-        measureMode: 'none',
-        measurePoints: [],
+      markerCount={this.viewModel.markerCount}
+      lastUpdate={this.viewModel.lastUpdate}
+      isConnected={this.viewModel.isConnected}
+      markers={[]}
+      camera={{
+        latitude: 38.8977,
+        longitude: -77.0365,
+        zoom: 10,
+        bearing: 0,
       }}
-      context={{
-        onOpenMenu: this.handleOpenDrawer.bind(this),
-        onOverflowMenu: this.handleOverflowMenu.bind(this),
-      }}
+      isLocked={false}
+      orientation="portrait"
+      northUp={true}
+      measureMode="none"
+      measurePoints={[]}
     />;
   }
 
   private renderSettingsScreen(): void {
     <SettingsScreen
-      viewModel={{
-        settings: this.viewModel.settings,
-      }}
+      settings={this.viewModel.settings}
       context={{
         onBack: () => this.handleNavigate('map'),
         onSettingChange: this.handleSettingChange.bind(this),
@@ -146,10 +138,8 @@ export class AppController extends Component<
 
   private renderServerScreen(): void {
     <ServerManagementScreen
-      viewModel={{
-        servers: this.viewModel.servers,
-        showAddDialog: this.viewModel.showAddServerDialog,
-      }}
+      servers={this.viewModel.servers}
+      showAddDialog={this.viewModel.showAddServerDialog}
       context={{
         onBack: () => this.handleNavigate('map'),
         onConnect: this.handleServerConnect.bind(this),
@@ -165,11 +155,9 @@ export class AppController extends Component<
 
   private renderPluginScreen(): void {
     <PluginManagementScreen
-      viewModel={{
-        installedPlugins: this.viewModel.installedPlugins,
-        availablePlugins: this.viewModel.availablePlugins,
-        selectedTab: this.viewModel.selectedPluginTab,
-      }}
+      installedPlugins={this.viewModel.installedPlugins}
+      availablePlugins={this.viewModel.availablePlugins}
+      selectedTab={this.viewModel.selectedPluginTab}
       context={{
         onBack: () => this.handleNavigate('map'),
         onEnablePlugin: this.handleEnablePlugin.bind(this),
@@ -200,13 +188,11 @@ export class AppController extends Component<
     const { userName, userCallsign, connectionStatus, currentScreen } = this.viewModel;
 
     <NavigationDrawer
-      viewModel={{
-        isOpen: true,
-        currentScreen,
-        userName,
-        userCallsign,
-        connectionStatus,
-      }}
+      isOpen={true}
+      currentScreen={currentScreen}
+      userName={userName}
+      userCallsign={userCallsign}
+      connectionStatus={connectionStatus}
       context={{
         onNavigate: this.handleNavigate.bind(this),
         onClose: this.handleCloseDrawer.bind(this),
@@ -357,7 +343,7 @@ export class AppController extends Component<
     });
   }
 
-  private handleNavigate(screen: NavigationItem): void {
+  private handleNavigate(screen: string): void {
     console.log('Navigate to:', screen);
     this.updateViewModel({
       currentScreen: screen,
