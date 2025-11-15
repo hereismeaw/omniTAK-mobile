@@ -10,7 +10,7 @@
 
 ## 🎉 Latest Update: iOS Physical Device Deployment (Nov 9, 2025)
 
-**Successfully deployed YA-TAK iOS app to physical iPhone in development mode!**
+**Successfully deployed OmniTAK iOS app to physical iPhone in development mode!**
 
 - ✅ Built and installed on iPhone 15 Pro (iOS 18.7.1)
 - ✅ Full ATAK-style UI with tactical theme
@@ -54,7 +54,7 @@ See [screenshots below](#screenshots) for live device captures!
 - **Color Coding** - Orange and green tactical colors for visibility
 
 ### 🎨 User Interface
-- **YA-TAK Branding** - Professional tactical theme with yellow accent (#FFFC00)
+- **OmniTAK Branding** - Professional tactical theme with yellow accent (#FFFC00)
 - **Navigation Drawer** - ATAK-style slide-in menu with user profile
 - **Responsive Design** - Works in portrait and landscape orientations
 - **Status Bar** - Real-time connection status, message counts, GPS accuracy, time
@@ -364,18 +364,18 @@ The server will start on `127.0.0.1:8087` and the app will automatically connect
 
 #### Tactical Map with Drawing Tools (Landscape)
 <p align="center">
-  <img src="./docs/screenshots/ios/IMG_0207.PNG" width="700" alt="YA-TAK tactical map with circles and polygons">
+  <img src="./docs/screenshots/ios/IMG_0207.PNG" width="700" alt="OmniTAK tactical map with circles and polygons">
 </p>
 
 *Full tactical view showing drawn circle and polygon on satellite imagery with drawings panel*
 
 #### Navigation Drawer & Drawing Tools (Portrait)
 <p align="center">
-  <img src="./docs/screenshots/ios/IMG_0210.PNG" width="300" alt="YA-TAK navigation drawer">
+  <img src="./docs/screenshots/ios/IMG_0210.PNG" width="300" alt="OmniTAK navigation drawer">
   <img src="./docs/screenshots/ios/IMG_0208.PNG" width="300" alt="Drawing tools panel">
 </p>
 
-*Left: YA-TAK navigation drawer with ALPHA-1 user profile | Right: Drawing tools with active shapes*
+*Left: OmniTAK navigation drawer with ALPHA-1 user profile | Right: Drawing tools with active shapes*
 
 #### Server Management (Portrait)
 <p align="center">
