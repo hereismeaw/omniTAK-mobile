@@ -1,21 +1,21 @@
 # Easy TAK Server Connection - UX Guide
 
-## 🎯 Philosophy: Connect in < 30 Seconds
+## Philosophy: Connect in Under 30 Seconds
 
-We've completely redesigned the TAK server connection experience to be **ridiculously easy**. Every user, regardless of technical expertise, should be able to connect to any TAK server quickly and confidently.
+We've completely redesigned the TAK server connection experience to be efficient and straightforward. Every user, regardless of technical expertise, should be able to connect to any TAK server quickly and confidently.
 
 ---
 
-## 🚀 New UX Components
+## New UX Components
 
-### 1. **QuickConnectView.swift** - The Main Entry Point
+### 1. QuickConnectView.swift - The Main Entry Point
 
-**Purpose**: One beautiful screen with 4 different connection methods.
+**Purpose**: One interface with 4 different connection methods.
 
 **Connection Methods**:
 
-#### 📱 QR Code (Recommended - 15 seconds)
-- **Flow**: Scan QR → Enter password → Connected!
+#### QR Code (Recommended - 15 seconds)
+- **Flow**: Scan QR → Enter password → Connected
 - **Best for**: Most users, fastest method
 - **Includes**: Built-in QR scanner, real-time validation, instant feedback
 - **UX Features**:
@@ -24,8 +24,8 @@ We've completely redesigned the TAK server connection experience to be **ridicul
   - Helpful "How it works" guide
   - Automatic server configuration
 
-#### 🔍 Auto-Discover (30 seconds)
-- **Flow**: Tap scan → Pick server → Connect!
+#### Auto-Discover (30 seconds)
+- **Flow**: Tap scan → Pick server → Connect
 - **Best for**: Local/development servers
 - **Features**:
   - Scans common TAK ports (8087, 8089, 8443, 8444, 8446)
@@ -33,8 +33,8 @@ We've completely redesigned the TAK server connection experience to be **ridicul
   - One-tap connect for non-cert servers
   - Visual server cards with status
 
-#### ⚡ Quick Setup (1-2 minutes)
-- **Flow**: Pick preset → Enter host → Connect!
+#### Quick Setup (1-2 minutes)
+- **Flow**: Pick preset → Enter host → Connect
 - **Best for**: Common server types
 - **Presets**:
   - FreeTAKServer (most common)
@@ -45,8 +45,8 @@ We've completely redesigned the TAK server connection experience to be **ridicul
   - Smart suggestions
   - Contextual help
 
-#### ⌨️ Manual (2-3 minutes)
-- **Flow**: Enter all details → Connect!
+#### Manual (2-3 minutes)
+- **Flow**: Enter all details → Connect
 - **Best for**: Advanced users, custom configs
 - **Features**:
   - Full control over all parameters
@@ -56,32 +56,32 @@ We've completely redesigned the TAK server connection experience to be **ridicul
 
 ---
 
-### 2. **ConnectionStatusWidget.swift** - Always Know Your Status
+### 2. ConnectionStatusWidget.swift - Always Know Your Status
 
-**Purpose**: Beautiful, glanceable connection status anywhere in the app.
+**Purpose**: Clear, glanceable connection status anywhere in the app.
 
 **Features**:
 
-#### 🟢 Connection Badge
+#### Connection Badge
 - **Animated pulse** when connected
 - **Color-coded**: Green (connected), Red (disconnected)
 - **Live stats**: Messages sent/received
 - **Tap to expand** for details
 
-#### 📊 Connection Details View
+#### Connection Details View
 - Full server information
 - Real-time statistics
 - Quick actions (disconnect, reconnect, change server)
 - Network troubleshooting info
 
-#### 🏷️ Compact Status Badge
+#### Compact Status Badge
 - Minimal version for toolbars
 - "Online/Offline" text
 - Subtle animations
 
 ---
 
-### 3. **FirstTimeOnboarding.swift** - Welcoming Experience
+### 3. FirstTimeOnboarding.swift - Welcoming Experience
 
 **Purpose**: Guide brand new users through their first connection.
 
@@ -92,7 +92,7 @@ We've completely redesigned the TAK server connection experience to be **ridicul
 4. **Get Started** - Launch QuickConnect
 
 **Features**:
-- Beautiful page transitions
+- Page transitions
 - Feature highlights with checkmarks
 - Skip option for experienced users
 - Smooth animations
@@ -101,12 +101,12 @@ We've completely redesigned the TAK server connection experience to be **ridicul
 #### Quick Start Guide
 - **4 connection methods** explained
 - **Difficulty ratings** (Easiest → Advanced)
-- **Time estimates** (< 30 sec → ~3 min)
+- **Time estimates** (under 30 sec → approximately 3 min)
 - **Help resources** (docs, support, videos)
 
 ---
 
-## 🎨 Design System
+## Design System
 
 ### Color Palette
 - **Primary Action**: `#FFFC00` (Yellow) - TAK brand
@@ -139,7 +139,7 @@ Selectable connection method cards
 
 ---
 
-## 🔄 User Flows
+## User Flows
 
 ### First-Time User Journey
 
@@ -154,7 +154,7 @@ QuickConnectView
     ↓
 Connect to Server
     ↓
-Success Animation ✨
+Success Animation
     ↓
 Main App (with ConnectionStatusWidget)
 ```
@@ -181,7 +181,7 @@ ConnectionDetailsView
 
 ---
 
-## 📱 Integration Points
+## Integration Points
 
 ### How to Add to Your App
 
@@ -220,14 +220,14 @@ VStack {
 
 ---
 
-## 🎯 Success Metrics
+## Success Metrics
 
 ### Target User Experience
 
-- **Time to Connect**: < 30 seconds (QR code method)
-- **Success Rate**: > 95% first-time success
+- **Time to Connect**: Under 30 seconds (QR code method)
+- **Success Rate**: Greater than 95% first-time success
 - **Discoverability**: 100% of users find connection options
-- **Support Tickets**: < 5% need help connecting
+- **Support Tickets**: Less than 5% need help connecting
 
 ### User Feedback Points
 
@@ -238,7 +238,7 @@ VStack {
 
 ---
 
-## 🔧 Technical Features
+## Technical Features
 
 ### Smart Defaults
 - Auto-detect localhost for development
@@ -260,7 +260,7 @@ VStack {
 
 ---
 
-## 🎓 Best Practices
+## Best Practices
 
 ### For TAK Server Admins
 
@@ -282,7 +282,7 @@ VStack {
 
 ---
 
-## 🚦 Connection States
+## Connection States
 
 ### Visual Feedback
 
@@ -295,7 +295,7 @@ VStack {
 
 ---
 
-## 📝 Accessibility
+## Accessibility
 
 ### Features
 - **VoiceOver** support on all buttons
@@ -306,25 +306,25 @@ VStack {
 
 ---
 
-## 🎉 Delightful Details
+## Delightful Details
 
 ### Micro-interactions
-- ✨ Success animation on connect
-- 🌊 Pulse animation when online
-- 🔄 Smooth page transitions
-- 📱 Haptic feedback on actions
-- 🎨 Color-coded status everywhere
+- Success animation on connect
+- Pulse animation when online
+- Smooth page transitions
+- Haptic feedback on actions
+- Color-coded status everywhere
 
 ### Helpful Touches
-- 💡 Contextual help on every screen
-- 🔢 Step-by-step guides
-- ⏱️ Time estimates for each method
-- 🏷️ Difficulty ratings
-- 📚 Quick start documentation
+- Contextual help on every screen
+- Step-by-step guides
+- Time estimates for each method
+- Difficulty ratings
+- Quick start documentation
 
 ---
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
 ### Planned Features
 1. **Bluetooth Discovery** - Find nearby TAK devices
@@ -338,7 +338,7 @@ VStack {
 
 ---
 
-## 📖 User Documentation
+## User Documentation
 
 ### Quick Reference
 
@@ -351,7 +351,7 @@ VStack {
    - Know the server type? → Quick setup
    - Need full control? → Manual
 3. Follow the on-screen prompts
-4. Done! You're connected
+4. Done. You're connected
 
 **"Why can't I connect?"**
 
@@ -363,7 +363,7 @@ Check the ConnectionDetailsView for:
 
 ---
 
-## 🎬 Demo Scenarios
+## Demo Scenarios
 
 ### Scenario 1: Field User with QR Code
 **Time**: 15 seconds
@@ -372,7 +372,7 @@ Check the ConnectionDetailsView for:
 2. User opens QuickConnect → QR Code
 3. Scan QR code
 4. Enter password (from admin)
-5. ✅ Connected!
+5. Connected
 
 ### Scenario 2: Developer Testing Locally
 **Time**: 20 seconds
@@ -381,7 +381,7 @@ Check the ConnectionDetailsView for:
 2. Tap "Scan for Servers"
 3. See "Local TAK Server (127.0.0.1:8087)"
 4. Tap "Connect"
-5. ✅ Connected!
+5. Connected
 
 ### Scenario 3: User with Server Details
 **Time**: 90 seconds
@@ -391,14 +391,14 @@ Check the ConnectionDetailsView for:
 3. Enter host: "tak.mycompany.com"
 4. Enter cert password
 5. Tap "Connect to Server"
-6. ✅ Connected!
+6. Connected
 
 ---
 
-## 💡 Tips for Success
+## Tips for Success
 
 ### For Users
-- **Start with QR** if available (fastest!)
+- **Start with QR** if available (fastest)
 - **Try Auto-Discover** for local testing
 - **Use Quick Setup** for known server types
 - **Check status widget** to confirm connection
@@ -411,6 +411,6 @@ Check the ConnectionDetailsView for:
 
 ---
 
-**Built with ❤️ for the TAK community**
+**Built for the TAK community**
 
 *Making secure communications accessible to everyone.*
