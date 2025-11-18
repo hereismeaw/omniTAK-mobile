@@ -8,31 +8,30 @@
 
 **Omni-BASE is a cross-platform TAK (Team Awareness Kit) client built with Rust and native mobile frameworks.** It provides full ATAK-compatible tactical map functionality with multi-server management, real-time CoT (Cursor on Target) messaging, and a modern native UI.
 
-## 🎉 Latest Update: iOS Physical Device Deployment (Nov 9, 2025)
+##  Latest Update: iOS Physical Device Deployment (Nov 9, 2025)
 
 **Successfully deployed OmniTAK iOS app to physical iPhone in development mode!**
 
-- ✅ Built and installed on iPhone 15 Pro (iOS 18.7.1)
-- ✅ Full ATAK-style UI with tactical theme
-- ✅ Configured with local Taky server (127.0.0.1:8087 via TCP)
-- ✅ Drawing tools fully operational (circles, polygons)
-- ✅ Multi-server management working
-- ✅ Real-time map with satellite imagery
-- ✅ Portrait and landscape orientation support
-- ✅ User profile system (ALPHA-1 Operator)
+-  Built and installed on iPhone 15 Pro (iOS 18.7.1)
+-  Full ATAK-style UI with tactical theme
+-  Configured with local Taky server (127.0.0.1:8087 via TCP)
+-  Drawing tools fully operational (circles, polygons)
+-  Multi-server management working
+-  Real-time map with satellite imagery
+-  Portrait and landscape orientation support
+-  User profile system (ALPHA-1 Operator)
 
-See [screenshots below](#screenshots) for live device captures!
-
+See [screenshots below](#screenshots) for live device captures.
 ## Features
 
-### 🗺️ Tactical Map Interface
+###  Tactical Map Interface
 - **ATAK-style UI** - Professional tactical map interface mirroring ATAK's design
 - **MapKit Integration** - Native iOS mapping with satellite, hybrid, and standard views
 - **Real-time CoT Markers** - Live position updates with color-coded unit types (friendly/hostile/unknown)
 - **GPS Tracking** - Real-time location with accuracy indicators
 - **Interactive Controls** - Zoom, pan, layer switching, and GPS centering
 
-### 📡 Multi-Server Management
+###  Multi-Server Management
 - **Server Configuration** - Add, edit, and delete multiple TAK servers
 - **Persistent Storage** - Server configurations saved locally with UserDefaults
 - **One-Tap Switching** - Quickly switch between configured servers
@@ -40,20 +39,20 @@ See [screenshots below](#screenshots) for live device captures!
 - **Protocol Support** - TCP/UDP with optional TLS encryption
 - **Active Server Display** - Current server name shown in status bar
 
-### 💬 CoT Messaging
+###  CoT Messaging
 - **XML Parser** - Parse and display CoT messages from TAK servers
 - **Broadcast Position** - Send self-position updates with full metadata
 - **Event Tracking** - Monitor sent and received message counts
 - **Type Filtering** - Filter units by affiliation (friendly, hostile, unknown)
 
-### ✏️ Drawing Tools
+###  Drawing Tools
 - **Circles** - Draw circular areas of interest on the map
 - **Polygons** - Create multi-point polygon shapes
 - **Drawing Management** - View, edit, and clear all drawings
 - **Persistent Storage** - Drawings saved and restored across sessions
 - **Color Coding** - Orange and green tactical colors for visibility
 
-### 🎨 User Interface
+###  User Interface
 - **OmniTAK Branding** - Professional tactical theme with yellow accent (#FFFC00)
 - **Navigation Drawer** - ATAK-style slide-in menu with user profile
 - **Responsive Design** - Works in portrait and landscape orientations
@@ -63,7 +62,7 @@ See [screenshots below](#screenshots) for live device captures!
 - **Haptic Feedback** - Tactile response for all button interactions
 - **Dark Mode Ready** - Semi-transparent overlays optimized for tactical use
 
-### 🔌 Plugin System (NEW!)
+###  Plugin System (NEW!)
 - **Secure Plugin Architecture** - Extensible plugin system with permission-based API access
 - **Two Development Modes** - Local development (your own signing) or official distribution (OmniTAK signing)
 - **GitLab CI/CD Integration** - Automated build, test, sign, and publish pipeline
@@ -137,7 +136,7 @@ omni-BASE/
 
 ## Quick Start
 
-### 🚀 Get OmniTAKMobile Running in 5 Minutes
+###  Get OmniTAKMobile Running in 5 Minutes
 
 **Want to run OmniTAK on your iPhone or simulator? Follow these simple steps.**
 
@@ -153,7 +152,7 @@ open OmniTAKMobile.xcodeproj
 
 # 3. Select any iPhone simulator from the device dropdown
 # 4. Press ⌘+R (or click the Play button)
-# Done! App launches in ~2-5 minutes on first build
+# Done. App launches in ~2-5 minutes on first build
 ```
 
 **That's it!** No code signing, no Apple ID required for simulator.
@@ -178,22 +177,21 @@ open OmniTAKMobile.xcodeproj
 # 5. Press ⌘+R to build and install
 # 6. On iPhone: Settings → General → VPN & Device Management
 #    → Trust your Apple ID → Trust
-# Done!
-```
+# Done.```
 
-#### 📖 Detailed Instructions
+####  Detailed Instructions
 
 For complete step-by-step instructions with screenshots and troubleshooting:
 
-**[👉 See apps/omnitak/README.md](apps/omnitak/README.md)**
+**[ See apps/omnitak/README.md](apps/omnitak/README.md)**
 
 The detailed README includes:
-- ✅ Absolute beginner's guide (never built iOS app before? Start here!)
-- ✅ Prerequisites with validation commands
-- ✅ Visual success/failure indicators
-- ✅ 20+ troubleshooting scenarios with solutions
-- ✅ Screenshots of the app
-- ✅ Expected output at every step
+-  Absolute beginner's guide (never built iOS app before? Start here!)
+-  Prerequisites with validation commands
+-  Visual success/failure indicators
+-  20+ troubleshooting scenarios with solutions
+-  Screenshots of the app
+-  Expected output at every step
 
 ### Setting Up TAK Server (Optional)
 
@@ -268,13 +266,13 @@ For detailed Android build instructions, see [apps/omnitak_android/README.md](ap
 
 ### Two Development Modes
 
-#### 🏠 Local Development (Your Own Signing)
+####  Local Development (Your Own Signing)
 - Use your own Apple Developer account (free or paid)
 - Build and test on your own iPhone/iPad
 - Perfect for learning and experimentation
 - No approval needed
 
-#### 🏢 Official Distribution (OmniTAK Signing)
+####  Official Distribution (OmniTAK Signing)
 - Submit plugins for official distribution
 - Signed with OmniTAK's certificate via GitLab CI/CD
 - Published to official plugin registry
@@ -389,7 +387,7 @@ The server will start on `127.0.0.1:8087` and the app will automatically connect
 
 ## Screenshots
 
-### 📱 Live iPhone Deployment (Nov 9, 2025)
+###  Live iPhone Deployment (Nov 9, 2025)
 
 #### Tactical Map with Drawing Tools (Landscape)
 <p align="center">
@@ -484,7 +482,7 @@ xcodebuild clean -scheme OmniTAKMobile
 
 ## Roadmap
 
-### Completed ✅
+### Completed 
 - [x] iOS physical device deployment
 - [x] Drawing tools (circles, polygons)
 - [x] Multi-server management
@@ -495,7 +493,7 @@ xcodebuild clean -scheme OmniTAKMobile
 - [x] Plugin development template and tools
 - [x] Comprehensive plugin documentation
 
-### In Progress 🚧
+### In Progress 
 - [ ] Plugin registry and marketplace
 - [ ] Example plugins (weather, tools, overlays)
 - [ ] Android implementation
@@ -509,7 +507,7 @@ xcodebuild clean -scheme OmniTAKMobile
 
 ## Contributing
 
-We welcome contributions! Please follow these guidelines:
+We welcome contributions. Please follow these guidelines:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
