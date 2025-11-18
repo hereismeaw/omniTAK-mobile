@@ -4,6 +4,43 @@ Full-featured native iOS tactical awareness app with ATAK-style interface, CoT m
 
 ---
 
+## 📸 Screenshots
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="screenshots/main_map_view.png" width="200"/><br />
+      <b>Main Map View</b><br />
+      Compact status bar, satellite imagery, GPS tracking
+    </td>
+    <td align="center">
+      <img src="screenshots/tools_menu.png" width="200"/><br />
+      <b>Tools Menu</b><br />
+      Teams, Chat, Routes, Drawing, and more
+    </td>
+    <td align="center">
+      <img src="screenshots/drawing_tools.png" width="200"/><br />
+      <b>Drawing Tools</b><br />
+      Polygons, lines, circles with color picker
+    </td>
+    <td align="center">
+      <img src="screenshots/drawings_list.png" width="200"/><br />
+      <b>Drawings List</b><br />
+      Manage and organize all drawings
+    </td>
+  </tr>
+</table>
+
+**Key Features Shown:**
+- 📱 **Portrait-optimized UI** - Compact translucent status bar
+- 🗺️ **Satellite mapping** - High-resolution imagery
+- 🎯 **Bottom toolbar** - Quick access to essential tools
+- 🎨 **Drawing tools** - Full tactical graphics support
+- 📊 **Real-time status** - Connection, GPS, messages
+- 🧭 **Coordinate display** - MGRS/UTM/Lat-Lon formats
+
+---
+
 ## 🚀 Complete Beginner's Guide
 
 **Never built an iOS app before? Start here!**
