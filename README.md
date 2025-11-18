@@ -1,27 +1,27 @@
-# Omni-BASE
+# OmniTAK Mobile
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE.md)
 [![Platforms](https://img.shields.io/badge/platform-iOS%20%7C%20Android-lightgrey)]()
-[![Status](https://img.shields.io/badge/status-alpha-orange)]()
+[![Status](https://img.shields.io/badge/status-beta-blue)]()
 [![Swift](https://img.shields.io/badge/Swift-5.0-orange?logo=swift)](https://swift.org)
 [![Rust](https://img.shields.io/badge/Rust-1.70+-orange?logo=rust)](https://www.rust-lang.org/)
 
-**Omni-BASE is a cross-platform TAK (Team Awareness Kit) client built with Rust and native mobile frameworks.** It provides full ATAK-compatible tactical map functionality with multi-server management, real-time CoT (Cursor on Target) messaging, and a modern native UI.
+**OmniTAK Mobile is a cross-platform TAK (Team Awareness Kit) client built with Rust and native mobile frameworks.** It provides full ATAK-compatible tactical map functionality with multi-server management, real-time CoT (Cursor on Target) messaging, and a modern native UI.
 
-##  Latest Update: iOS Physical Device Deployment (Nov 9, 2025)
+## Latest Update: iOS App Store Release (Nov 17, 2025)
 
-**Successfully deployed OmniTAK iOS app to physical iPhone in development mode!**
+**OmniTAK Mobile is now available on the App Store.**
 
--  Built and installed on iPhone 15 Pro (iOS 18.7.1)
--  Full ATAK-style UI with tactical theme
--  Configured with local Taky server (127.0.0.1:8087 via TCP)
--  Drawing tools fully operational (circles, polygons)
--  Multi-server management working
--  Real-time map with satellite imagery
--  Portrait and landscape orientation support
--  User profile system (ALPHA-1 Operator)
+- Full ATAK-style UI with tactical theme
+- Multi-server management with TLS support
+- Certificate enrollment via QR code
+- Drawing tools (circles, polygons, lines)
+- Team chat and messaging
+- Real-time map with satellite imagery
+- Waypoint navigation and routing
+- Portrait and landscape orientation support
 
-See [screenshots below](#screenshots) for live device captures.
+Download from the App Store or see [screenshots below](#screenshots).
 ## Features
 
 ###  Tactical Map Interface
@@ -79,7 +79,7 @@ See [Plugin Development](#plugin-development) section below for details.
 ### Core Components
 
 ```
-omni-BASE/
+omniTAK-mobile/
 ├── apps/
 │   ├── omnitak/                 # Native iOS app (OmniTAKMobile)
 │   │   ├── OmniTAKMobile/
@@ -144,8 +144,8 @@ omni-BASE/
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/engindearing-projects/omni-BASE.git
-cd omni-BASE/apps/omnitak
+git clone https://github.com/engindearing-projects/omniTAK-mobile.git
+cd omniTAK-mobile/apps/omnitak
 
 # 2. Open in Xcode
 open OmniTAKMobile.xcodeproj
@@ -161,8 +161,8 @@ open OmniTAKMobile.xcodeproj
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/engindearing-projects/omni-BASE.git
-cd omni-BASE/apps/omnitak
+git clone https://github.com/engindearing-projects/omniTAK-mobile.git
+cd omniTAK-mobile/apps/omnitak
 
 # 2. Open in Xcode
 open OmniTAKMobile.xcodeproj
@@ -226,8 +226,8 @@ Configure in app: **Menu (≡)** → **Servers** → **Add Server**
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/engindearing-projects/omni-BASE.git
-   cd omni-BASE
+   git clone https://github.com/engindearing-projects/omniTAK-mobile.git
+   cd omniTAK-mobile
    ```
 
 2. **Install Rust Android targets:**
