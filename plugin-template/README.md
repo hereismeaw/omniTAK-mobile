@@ -4,13 +4,13 @@ This is the official template for creating OmniTAK plugins. Use this template to
 
 ## Two Ways to Develop
 
-### 🏠 Local Development (Your Own Signing)
+###  Local Development (Your Own Signing)
 - Use your own Apple Developer account (free or paid)
 - Build and test on your own iPhone/iPad
 - Perfect for learning and experimentation
 - See [Local Development Setup](../docs/LOCAL_DEVELOPMENT_SETUP.md)
 
-### 🏢 Official Distribution (OmniTAK Signing)
+###  Official Distribution (OmniTAK Signing)
 - Submit your plugin for official distribution
 - Signed with OmniTAK's certificate via GitLab CI/CD
 - Published to official plugin registry
@@ -131,8 +131,7 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
-Your plugin is now available to all OmniTAK users! 🎉
-
+Your plugin is now available to all OmniTAK users.
 ## Plugin Structure
 
 ```
@@ -212,8 +211,7 @@ func createPanel() -> UIViewController? {
 func activate() async throws {
     let networkManager = try context.networkManager
 
-    let url = URL(string: "https://api.example.com/data")!
-    let (data, response) = try await networkManager?.request(url: url)
+    let url = URL(string: "https://api.example.com/data").    let (data, response) = try await networkManager?.request(url: url)
 
     // Process response
 }

@@ -29,23 +29,23 @@ This is a native iOS application that showcases the capabilities of OmniTAK Mobi
 
 ### Implemented
 
-- ✅ Native iOS app with Swift UI
-- ✅ OmniTAK native library integration via XCFramework
-- ✅ MapLibre GL Native map rendering
-- ✅ TAK server connection management
-- ✅ CoT message send/receive
-- ✅ Location services integration
-- ✅ Unit and integration tests
-- ✅ Simulator and device support
+-  Native iOS app with Swift UI
+-  OmniTAK native library integration via XCFramework
+-  MapLibre GL Native map rendering
+-  TAK server connection management
+-  CoT message send/receive
+-  Location services integration
+-  Unit and integration tests
+-  Simulator and device support
 
 ### Planned
 
-- 🔄 Valdi TypeScript UI integration
-- 🔄 Advanced map features (layers, annotations)
-- 🔄 Certificate management UI
-- 🔄 Settings and preferences
-- 🔄 Background location tracking
-- 🔄 Push notifications
+-  Valdi TypeScript UI integration
+-  Advanced map features (layers, annotations)
+-  Certificate management UI
+-  Settings and preferences
+-  Background location tracking
+-  Push notifications
 
 ## Architecture
 
@@ -221,14 +221,11 @@ Change the MapLibre style in `ViewController.swift`:
 
 ```swift
 // Default: MapLibre demo tiles
-let mapURL = URL(string: "https://demotiles.maplibre.org/style.json")!
-
+let mapURL = URL(string: "https://demotiles.maplibre.org/style.json").
 // Alternative: Mapbox streets (requires API key)
-let mapURL = URL(string: "mapbox://styles/mapbox/streets-v11")!
-
+let mapURL = URL(string: "mapbox://styles/mapbox/streets-v11").
 // Custom: Your own style
-let mapURL = URL(string: "https://your-tiles.example.com/style.json")!
-```
+let mapURL = URL(string: "https://your-tiles.example.com/style.json").```
 
 ## Usage Example
 
@@ -248,7 +245,7 @@ let config: [String: Any] = [
 
 bridge.connect(config: config) { connectionId in
     if let id = connectionId {
-        print("Connected! ID: \(id)")
+        print("Connected. ID: \(id)")
     } else {
         print("Connection failed")
     }
@@ -289,8 +286,7 @@ bridge.registerCotCallback(connectionId: connectionId) { cotXml in
 ### MapLibre Map
 
 ```swift
-let styleURL = URL(string: "https://demotiles.maplibre.org/style.json")!
-let mapView = MLNMapView(frame: view.bounds, styleURL: styleURL)
+let styleURL = URL(string: "https://demotiles.maplibre.org/style.json").let mapView = MLNMapView(frame: view.bounds, styleURL: styleURL)
 
 // Set camera
 mapView.setCenter(

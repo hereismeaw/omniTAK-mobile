@@ -7,8 +7,8 @@ Cross-platform TAK (Team Awareness Kit) client built with Valdi framework for na
 
 ## Status
 
-🚀 **iOS**: Fully functional - connecting to TAK servers, sending/receiving CoT messages
-🚧 **Android**: In development - Gradle build complete, networking implementation in progress
+ **iOS**: Fully functional - connecting to TAK servers, sending/receiving CoT messages
+ **Android**: In development - Gradle build complete, networking implementation in progress
 
 ## Overview
 
@@ -319,7 +319,7 @@ export interface OmniTAKNativeModule {
 - [x] CoT parser and data structures
 - [x] TakService FFI interface design
 
-### Phase 2: Core Functionality (✅ iOS Complete, 🚧 Android In Progress)
+### Phase 2: Core Functionality ( iOS Complete,  Android In Progress)
 - [x] **iOS**: Swift Network framework direct TCP/UDP/TLS sender (bypasses incomplete Rust FFI)
 - [x] **iOS**: MapLibre integration complete
 - [x] **iOS**: Basic map rendering working
@@ -329,7 +329,7 @@ export interface OmniTAKNativeModule {
 - [ ] **Android**: MapLibre integration
 - [x] Rust FFI bridge architecture (implementation pending completion)
 
-### Phase 3: TAK Integration (✅ iOS Working)
+### Phase 3: TAK Integration ( iOS Working)
 - [x] **iOS**: Server connection management (TCP, UDP, TLS support)
 - [x] **iOS**: Real-time CoT message transmission and reception
 - [x] **iOS**: Tested with Taky server

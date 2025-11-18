@@ -46,7 +46,7 @@ In the previous debugger, you had to remember to add the `--inspect` flag when y
 
 ### Profiling Support
 
-You can capture and view performance profiles natively in VS Code, by clicking on the ⚪ button in the Call Stack view, or through the `Debug: Take Performance Profile` command. The profile information collected through VS Code is sourcemap-aware.
+You can capture and view performance profiles natively in VS Code, by clicking on the  button in the Call Stack view, or through the `Debug: Take Performance Profile` command. The profile information collected through VS Code is sourcemap-aware.
 
 <img src="resources/readme/flame-chart.png" width="845">
 
@@ -178,7 +178,7 @@ The following options can be configured:
 <h5>Default value:</h4><pre><code>{
   "webpack://?:*/*": "${workspaceFolder}/*",
   "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
-  "meteor://💻app/*": "${workspaceFolder}/*"
+  "meteor://app/*": "${workspaceFolder}/*"
 }</pre></code><h4>sourceMaps</h4><p>Use JavaScript source maps (if they exist).</p>
 <h5>Default value:</h4><pre><code>true</pre></code><h4>timeout</h4><p>Retry for this number of milliseconds to connect to Node.js. Default is 10000 ms.</p>
 <h5>Default value:</h4><pre><code>10000</pre></code><h4>trace</h4><p>Configures what diagnostic output is produced.</p>
@@ -213,7 +213,7 @@ The following options can be configured:
 <h5>Default value:</h4><pre><code>{
   "webpack://?:*/*": "${workspaceFolder}/*",
   "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
-  "meteor://💻app/*": "${workspaceFolder}/*"
+  "meteor://app/*": "${workspaceFolder}/*"
 }</pre></code><h4>sourceMaps</h4><p>Use JavaScript source maps (if they exist).</p>
 <h5>Default value:</h4><pre><code>true</pre></code><h4>timeout</h4><p>Retry for this number of milliseconds to connect to Node.js. Default is 10000 ms.</p>
 <h5>Default value:</h4><pre><code>10000</pre></code><h4>trace</h4><p>Configures what diagnostic output is produced.</p>
@@ -250,7 +250,7 @@ The following options can be configured:
 <h5>Default value:</h4><pre><code>{
   "webpack://?:*/*": "${workspaceFolder}/*",
   "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
-  "meteor://💻app/*": "${workspaceFolder}/*"
+  "meteor://app/*": "${workspaceFolder}/*"
 }</pre></code><h4>sourceMaps</h4><p>Use JavaScript source maps (if they exist).</p>
 <h5>Default value:</h4><pre><code>true</pre></code><h4>stopOnEntry</h4><p>Automatically stop program after launch.</p>
 <h5>Default value:</h4><pre><code>false</pre></code><h4>timeout</h4><p>Retry for this number of milliseconds to connect to Node.js. Default is 10000 ms.</p>
@@ -283,7 +283,7 @@ The following options can be configured:
 <h5>Default value:</h4><pre><code>{
   "webpack://?:*/*": "${workspaceFolder}/*",
   "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
-  "meteor://💻app/*": "${workspaceFolder}/*"
+  "meteor://app/*": "${workspaceFolder}/*"
 }</pre></code><h4>sourceMaps</h4><p>Use JavaScript source maps (if they exist).</p>
 <h5>Default value:</h4><pre><code>true</pre></code><h4>timeout</h4><p>Retry for this number of milliseconds to connect to Node.js. Default is 10000 ms.</p>
 <h5>Default value:</h4><pre><code>10000</pre></code><h4>trace</h4><p>Configures what diagnostic output is produced.</p>
@@ -318,7 +318,7 @@ The following options can be configured:
 <h5>Default value:</h4><pre><code>{
   "webpack://?:*/*": "${workspaceFolder}/*",
   "webpack:///./~/*": "${workspaceFolder}/node_modules/*",
-  "meteor://💻app/*": "${workspaceFolder}/*"
+  "meteor://app/*": "${workspaceFolder}/*"
 }</pre></code><h4>sourceMaps</h4><p>Use JavaScript source maps (if they exist).</p>
 <h5>Default value:</h4><pre><code>true</pre></code><h4>timeout</h4><p>Retry for this number of milliseconds to connect to Node.js. Default is 10000 ms.</p>
 <h5>Default value:</h4><pre><code>10000</pre></code><h4>trace</h4><p>Configures what diagnostic output is produced.</p>
@@ -353,7 +353,7 @@ The following options can be configured:
 <h5>Default value:</h4><pre><code>{
   "webpack://?:*/*": "${webRoot}/*",
   "webpack:///./~/*": "${webRoot}/node_modules/*",
-  "meteor://💻app/*": "${webRoot}/*"
+  "meteor://app/*": "${webRoot}/*"
 }</pre></code><h4>sourceMaps</h4><p>Use JavaScript source maps (if they exist).</p>
 <h5>Default value:</h4><pre><code>true</pre></code><h4>timeout</h4><p>Retry for this number of milliseconds to connect to Node.js. Default is 10000 ms.</p>
 <h5>Default value:</h4><pre><code>10000</pre></code><h4>trace</h4><p>Configures what diagnostic output is produced.</p>
@@ -389,7 +389,7 @@ The following options can be configured:
 <h5>Default value:</h4><pre><code>{
   "webpack://?:*/*": "${webRoot}/*",
   "webpack:///./~/*": "${webRoot}/node_modules/*",
-  "meteor://💻app/*": "${webRoot}/*"
+  "meteor://app/*": "${webRoot}/*"
 }</pre></code><h4>sourceMaps</h4><p>Use JavaScript source maps (if they exist).</p>
 <h5>Default value:</h4><pre><code>true</pre></code><h4>targetSelection</h4><p>Whether to attach to all targets that match the URL filter (&quot;automatic&quot;) or ask to pick one (&quot;pick&quot;).</p>
 <h5>Default value:</h4><pre><code>"automatic"</pre></code><h4>timeout</h4><p>Retry for this number of milliseconds to connect to Node.js. Default is 10000 ms.</p>
@@ -433,7 +433,7 @@ The following options can be configured:
 <h5>Default value:</h4><pre><code>{
   "webpack://?:*/*": "${webRoot}/*",
   "webpack:///./~/*": "${webRoot}/node_modules/*",
-  "meteor://💻app/*": "${webRoot}/*"
+  "meteor://app/*": "${webRoot}/*"
 }</pre></code><h4>sourceMaps</h4><p>Use JavaScript source maps (if they exist).</p>
 <h5>Default value:</h4><pre><code>true</pre></code><h4>timeout</h4><p>Retry for this number of milliseconds to connect to Node.js. Default is 10000 ms.</p>
 <h5>Default value:</h4><pre><code>10000</pre></code><h4>trace</h4><p>Configures what diagnostic output is produced.</p>
@@ -470,7 +470,7 @@ The following options can be configured:
 <h5>Default value:</h4><pre><code>{
   "webpack://?:*/*": "${webRoot}/*",
   "webpack:///./~/*": "${webRoot}/node_modules/*",
-  "meteor://💻app/*": "${webRoot}/*"
+  "meteor://app/*": "${webRoot}/*"
 }</pre></code><h4>sourceMaps</h4><p>Use JavaScript source maps (if they exist).</p>
 <h5>Default value:</h4><pre><code>true</pre></code><h4>targetSelection</h4><p>Whether to attach to all targets that match the URL filter (&quot;automatic&quot;) or ask to pick one (&quot;pick&quot;).</p>
 <h5>Default value:</h4><pre><code>"automatic"</pre></code><h4>timeout</h4><p>Retry for this number of milliseconds to connect to Node.js. Default is 10000 ms.</p>
