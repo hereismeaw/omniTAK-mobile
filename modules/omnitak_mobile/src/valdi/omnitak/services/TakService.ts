@@ -69,6 +69,59 @@ export interface OmniTAKNativeModule {
     keyPem: string,
     caPem?: string
   ): Promise<string | null>;
+
+  /**
+   * Enroll for a certificate from a TAK server
+   * @param serverUrl Full server URL (e.g., https://tak.example.com:8443)
+   * @param username Username for authentication
+   * @param password Password for authentication
+   * @param validityDays Certificate validity period
+   * @returns Enrollment result with certificate ID and server info
+   */
+  enrollCertificate?(
+    serverUrl: string,
+    username: string,
+    password: string,
+    validityDays: number
+  ): Promise<{
+    certificateId: string | null;
+    serverInfo?: { hostname: string; port?: number };
+    expiresAt?: string;
+    error?: string;
+  }>;
+
+  /**
+   * List all stored certificates
+   * @returns Array of certificate info
+   */
+  listCertificates?(): Promise<Array<{
+    id: string;
+    name: string;
+    commonName: string;
+    issuer: string;
+    validFrom: string;
+    validUntil: string;
+    status: 'valid' | 'expiring_soon' | 'expired';
+    daysUntilExpiry?: number;
+  }>>;
+
+  /**
+   * Delete a stored certificate
+   * @param certificateId Certificate ID to delete
+   * @returns true if successful
+   */
+  deleteCertificate?(certificateId: string): Promise<boolean>;
+
+  /**
+   * Open file picker to select certificate files
+   * @param fileType Type of file to select ('pem', 'p12', etc.)
+   * @returns File content and metadata
+   */
+  pickCertificateFile?(fileType: string): Promise<{
+    filename: string;
+    content: string;
+    type: string;
+  } | null>;
 }
 
 /**
@@ -225,6 +278,90 @@ export class TakService {
     }
 
     return await this.native.importCertificate(certPem, keyPem, caPem);
+  }
+
+  /**
+   * Enroll for a certificate from a TAK server
+   * @param serverUrl Full server URL (e.g., https://tak.example.com:8443)
+   * @param username Username for authentication
+   * @param password Password for authentication
+   * @param validityDays Certificate validity period (default: 365)
+   * @returns Certificate ID for use in ServerConfig, or null on failure
+   */
+  async enrollCertificate(
+    serverUrl: string,
+    username: string,
+    password: string,
+    validityDays?: number
+  ): Promise<{
+    certificateId: string | null;
+    serverInfo?: { hostname: string; port?: number };
+    expiresAt?: string;
+    error?: string;
+  }> {
+    if (!this.native) {
+      console.error('Native module not initialized');
+      return { certificateId: null, error: 'Native module not initialized' };
+    }
+
+    if (!this.native.enrollCertificate) {
+      console.error('Certificate enrollment not supported by native module');
+      return { certificateId: null, error: 'Enrollment not supported' };
+    }
+
+    try {
+      const result = await this.native.enrollCertificate(
+        serverUrl,
+        username,
+        password,
+        validityDays || 365
+      );
+
+      return result;
+    } catch (error) {
+      console.error('Certificate enrollment failed:', error);
+      return {
+        certificateId: null,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * List all stored certificates
+   * @returns Array of certificate info objects
+   */
+  async listCertificates(): Promise<any[]> {
+    if (!this.native || !this.native.listCertificates) {
+      console.warn('Certificate listing not supported');
+      return [];
+    }
+
+    try {
+      return await this.native.listCertificates();
+    } catch (error) {
+      console.error('Failed to list certificates:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Delete a stored certificate
+   * @param certificateId ID of certificate to delete
+   * @returns true if successful
+   */
+  async deleteCertificate(certificateId: string): Promise<boolean> {
+    if (!this.native || !this.native.deleteCertificate) {
+      console.warn('Certificate deletion not supported');
+      return false;
+    }
+
+    try {
+      return await this.native.deleteCertificate(certificateId);
+    } catch (error) {
+      console.error('Failed to delete certificate:', error);
+      return false;
+    }
   }
 
   /**
