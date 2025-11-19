@@ -135,10 +135,20 @@ public struct ConnectionInfo: Codable {
 
 // MARK: - Certificate Storage
 
-private struct CertificateBundle {
+private struct CertificateBundle: Codable {
     let certPem: String
     let keyPem: String
     let caPem: String?
+    let commonName: String
+    let issuer: String
+    let validFrom: String
+    let validUntil: String
+    let serverInfo: ServerInfo?
+
+    struct ServerInfo: Codable {
+        let hostname: String
+        let port: Int?
+    }
 }
 
 // MARK: - Native Bridge Class
@@ -370,10 +380,18 @@ public class OmniTAKNativeBridge: NSObject {
         // Generate a unique ID for this certificate bundle
         let certId = UUID().uuidString
 
+        // Parse certificate metadata
+        let certInfo = parseCertificateInfo(from: certPem)
+
         let bundle = CertificateBundle(
             certPem: certPem,
             keyPem: keyPem,
-            caPem: caPem
+            caPem: caPem,
+            commonName: certInfo?.commonName ?? "Imported Certificate",
+            issuer: certInfo?.issuer ?? "Unknown",
+            validFrom: certInfo?.validFrom ?? ISO8601DateFormatter().string(from: Date()),
+            validUntil: certInfo?.validUntil ?? ISO8601DateFormatter().string(from: Date().addingTimeInterval(365 * 24 * 60 * 60)),
+            serverInfo: nil
         )
 
         certificates[certId] = bundle
@@ -462,12 +480,23 @@ public class OmniTAKNativeBridge: NSObject {
                     // Clear result
                     omnitak_enrollment_clear_result()
 
+                    // Parse certificate metadata
+                    let certInfo = self.parseCertificateInfo(from: certPem)
+
                     // Import the certificate
                     let certId = UUID().uuidString
                     let bundle = CertificateBundle(
                         certPem: certPem,
                         keyPem: keyPem,
-                        caPem: caPem.isEmpty ? nil : caPem
+                        caPem: caPem.isEmpty ? nil : caPem,
+                        commonName: certInfo?.commonName ?? username,
+                        issuer: certInfo?.issuer ?? "TAK Server CA",
+                        validFrom: certInfo?.validFrom ?? ISO8601DateFormatter().string(from: Date()),
+                        validUntil: certInfo?.validUntil ?? ISO8601DateFormatter().string(from: Date().addingTimeInterval(TimeInterval(validityDays) * 24 * 60 * 60)),
+                        serverInfo: CertificateBundle.ServerInfo(
+                            hostname: serverHost,
+                            port: port > 0 ? Int(port) : nil
+                        )
                     )
 
                     self.certificates[certId] = bundle
@@ -493,6 +522,105 @@ public class OmniTAKNativeBridge: NSObject {
         }
     }
 }
+
+    // MARK: - Certificate Management
+
+    @objc public func listCertificates(completion: @escaping ([[String: Any]]) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else {
+                completion([])
+                return
+            }
+
+            var certList: [[String: Any]] = []
+
+            for (certId, bundle) in self.certificates {
+                let certDict: [String: Any] = [
+                    "id": certId,
+                    "name": bundle.commonName,
+                    "commonName": bundle.commonName,
+                    "issuer": bundle.issuer,
+                    "validFrom": bundle.validFrom,
+                    "validUntil": bundle.validUntil,
+                    "status": self.getCertificateStatus(bundle),
+                    "daysUntilExpiry": self.getDaysUntilExpiry(bundle)
+                ]
+                certList.append(certDict)
+            }
+
+            completion(certList)
+        }
+    }
+
+    @objc public func deleteCertificate(certificateId: String, completion: @escaping (Bool) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else {
+                completion(false)
+                return
+            }
+
+            if self.certificates.removeValue(forKey: certificateId) != nil {
+                print("[OmniTAK] Certificate deleted: \(certificateId)")
+                completion(true)
+            } else {
+                print("[OmniTAK] Certificate not found: \(certificateId)")
+                completion(false)
+            }
+        }
+    }
+
+    @objc public func pickCertificateFile(fileType: String, completion: @escaping ([String: Any]?) -> Void) {
+        // This will need to present a UIDocumentPickerViewController
+        // For now, return nil - needs UI integration
+        DispatchQueue.main.async {
+            print("[OmniTAK] File picker not yet implemented for type: \(fileType)")
+            completion(nil)
+        }
+    }
+
+    // MARK: - Certificate Helpers
+
+    private func getCertificateStatus(_ bundle: CertificateBundle) -> String {
+        let daysUntilExpiry = getDaysUntilExpiry(bundle)
+
+        if daysUntilExpiry < 0 {
+            return "expired"
+        } else if daysUntilExpiry < 30 {
+            return "expiring_soon"
+        } else {
+            return "valid"
+        }
+    }
+
+    private func getDaysUntilExpiry(_ bundle: CertificateBundle) -> Int {
+        let dateFormatter = ISO8601DateFormatter()
+
+        guard let expiryDate = dateFormatter.date(from: bundle.validUntil) else {
+            return 0
+        }
+
+        let now = Date()
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.day], from: now, to: expiryDate)
+
+        return components.day ?? 0
+    }
+
+    private func parseCertificateInfo(from certPem: String) -> (commonName: String, issuer: String, validFrom: String, validUntil: String)? {
+        // Parse certificate PEM to extract metadata
+        // For now, use placeholder values
+        // TODO: Implement proper X.509 parsing using Security framework
+
+        let now = ISO8601DateFormatter().string(from: Date())
+        let oneYearLater = ISO8601DateFormatter().string(from: Date().addingTimeInterval(365 * 24 * 60 * 60))
+
+        return (
+            commonName: "Client Certificate",
+            issuer: "TAK Server CA",
+            validFrom: now,
+            validUntil: oneYearLater
+        )
+    }
 
 // MARK: - Valdi Integration Helper
 
