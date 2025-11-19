@@ -14,7 +14,8 @@
 
 - Full ATAK-style UI with tactical theme
 - Multi-server management with TLS support
-- Certificate enrollment via QR code
+- Certificate management with Keychain storage
+- Certificate enrollment and file import
 - Drawing tools (circles, polygons, lines)
 - Team chat and messaging
 - Real-time map with satellite imagery
@@ -37,6 +38,14 @@
 - **Connection Status** - Real-time indicators showing active connections
 - **Protocol Support** - TCP/UDP with optional TLS encryption
 - **Active Server Display** - Current server name shown in status bar
+
+### Certificate Management
+- **iOS Keychain Storage** - Secure persistent storage for client certificates
+- **Certificate Enrollment** - Obtain certificates from TAK servers using username/password
+- **File Import** - Import certificates from .pem, .crt, .key, .p12, and .pfx files
+- **Certificate Listing** - View all stored certificates with validity status
+- **Expiration Tracking** - Monitor certificate expiration dates
+- **TLS Authentication** - Full support for mutual TLS with client certificates
 
 ### CoT Messaging
 - **XML Parser** - Parse and display CoT messages from TAK servers
@@ -380,7 +389,11 @@ The server will start on `127.0.0.1:8087` and the app will automatically connect
    - Port (default: 8087)
    - Protocol (TCP or UDP)
    - TLS (toggle if using SSL/TLS)
-4. Tap "Save Server"
+4. Configure certificate (if TLS enabled):
+   - Get Certificate from Server - Enroll using username/password
+   - Import Certificate Files - Select .pem, .crt, .key, or .p12 files
+   - Use Stored Certificate - Choose from previously saved certificates
+5. Tap "Save Server"
 
 ## Screenshots
 
@@ -479,13 +492,16 @@ xcodebuild clean -scheme OmniTAKMobile
 
 ## Roadmap
 
-### Completed 
+### Completed
 - [x] iOS physical device deployment
 - [x] Drawing tools (circles, polygons)
 - [x] Multi-server management
 - [x] Real-time TAK server connectivity
 - [x] ATAK-style navigation drawer
 - [x] User profile system
+- [x] Certificate management with Keychain storage
+- [x] Certificate enrollment and file import
+- [x] TLS mutual authentication
 - [x] Secure plugin system with GitLab CI/CD
 - [x] Plugin development template and tools
 - [x] Comprehensive plugin documentation

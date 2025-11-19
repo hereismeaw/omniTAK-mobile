@@ -18,11 +18,54 @@ OmniTAK Mobile is a modern, high-performance situational awareness application t
 
 - **Real-time CoT Message Handling**: Send and receive Cursor on Target messages in XML and Protobuf formats
 - **Multi-Server Support**: Connect to multiple TAK servers simultaneously via omni-TAK backend
-- **Certificate Management**: Secure TLS connections with automatic certificate provisioning
+- **Certificate Management**: Secure TLS connections with iOS Keychain storage, enrollment, and file import
 - **Interactive Mapping**: High-performance map rendering with MapLibre GL Native
 - **MIL-STD-2525 Compliance**: Full support for military symbology and affiliation codes
 - **Offline Capabilities**: Work without internet using cached map tiles and local data
 - **Cross-Platform**: Single codebase compiles to native iOS and Android apps
+
+## Certificate Management (iOS)
+
+OmniTAK Mobile provides comprehensive certificate management for secure TLS connections to TAK servers.
+
+### Features
+
+- **iOS Keychain Storage**: Certificates stored securely using iOS Keychain Services with `kSecAttrAccessibleWhenUnlocked` protection
+- **Certificate Enrollment**: Obtain certificates directly from TAK servers using username/password authentication
+- **File Import**: Import certificates from various formats including .pem, .crt, .key, .p12, and .pfx files
+- **Certificate Listing**: View all stored certificates with metadata (common name, issuer, validity dates)
+- **Expiration Tracking**: Monitor certificate validity with status indicators (valid, expiring soon, expired)
+- **Mutual TLS**: Full support for TLS client authentication with certificate-based connections
+
+### Implementation
+
+The certificate management system consists of three main components:
+
+**CertificateKeychainManager.swift**
+- Wrapper around iOS Keychain Services API
+- JSON encoding/decoding for certificate bundles using Swift Codable
+- CRUD operations for certificate storage
+- Migration support for legacy in-memory certificates
+
+**OmniTAKNativeBridge.swift**
+- Swift FFI bridge to Rust omnitak-mobile library
+- Certificate enrollment via TAK server API
+- File picker integration using UIDocumentPickerViewController
+- Certificate validation and metadata extraction
+
+**Add Server UI**
+- Three certificate configuration options with color-coded icons
+- Get Certificate from Server (enrollment workflow)
+- Import Certificate Files (file picker integration)
+- Use Stored Certificate (Keychain selection)
+
+### Security
+
+All certificates are stored in iOS Keychain with the following security attributes:
+- Storage class: `kSecClassGenericPassword`
+- Accessibility: `kSecAttrAccessibleWhenUnlocked`
+- Service identifier: `com.engindearing.omnitak.certificates`
+- Optional access group support for app extensions
 
 ## Architecture
 
@@ -327,12 +370,17 @@ export interface OmniTAKNativeModule {
 - [ ] **Android**: MapLibre integration
 - [x] Rust FFI bridge architecture (implementation pending completion)
 
-### Phase 3: TAK Integration ( iOS Working)
+### Phase 3: TAK Integration ( iOS Complete)
 - [x] **iOS**: Server connection management (TCP, UDP, TLS support)
 - [x] **iOS**: Real-time CoT message transmission and reception
 - [x] **iOS**: Tested with Taky server
-- [ ] Certificate auto-provisioning
-- [ ] Multi-server support
+- [x] **iOS**: Certificate enrollment via username/password
+- [x] **iOS**: Certificate import from files (.pem, .crt, .key, .p12, .pfx)
+- [x] **iOS**: Keychain storage for certificate persistence
+- [x] **iOS**: Certificate listing and expiration tracking
+- [x] **iOS**: TLS mutual authentication with client certificates
+- [x] Multi-server support
+- [ ] **Android**: Certificate management implementation
 
 ### Phase 4: Advanced Features
 - [ ] Offline maps
