@@ -1624,6 +1624,9 @@ struct ServerEditView: View {
     @State private var useTLS: Bool
     @State private var certificateName: String
     @State private var certificatePassword: String
+    @State private var selectedCertificateId: String?
+    @State private var showEnrollmentDialog = false
+    @State private var showCertificateList = false
     @Environment(\.dismiss) var dismiss
 
     init(server: TAKServer?, onSave: @escaping (TAKServer) -> Void) {
@@ -1659,23 +1662,101 @@ struct ServerEditView: View {
                 }
 
                 if useTLS {
-                    Section("TLS CERTIFICATE (OPTIONAL)") {
-                        TextField("Certificate Name", text: $certificateName)
-                            .autocapitalization(.none)
-                            .placeholder(when: certificateName.isEmpty) {
-                                Text("e.g., omnitak-mobile").foregroundColor(.gray)
-                            }
-                        SecureField("Certificate Password", text: $certificatePassword)
-                            .placeholder(when: certificatePassword.isEmpty) {
-                                Text("e.g., atakatak").foregroundColor(.gray)
-                            }
-                    }
-                    .headerProminence(.increased)
-
                     Section {
-                        Text("📋 Certificate must be added to app bundle as:\n\(certificateName.isEmpty ? "[name]" : certificateName).p12")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Image(systemName: "lock.shield.fill")
+                                    .foregroundColor(Color(hex: "#FFFC00"))
+                                Text("TLS Certificate Required")
+                                    .font(.system(size: 15, weight: .semibold))
+                            }
+                            .padding(.bottom, 4)
+
+                            Text("Secure TLS connections require a client certificate for authentication.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.vertical, 4)
+                    }
+
+                    Section("CERTIFICATE OPTIONS") {
+                        // Option 1: Enroll for certificate
+                        Button(action: {
+                            showEnrollmentDialog = true
+                        }) {
+                            HStack {
+                                Image(systemName: "arrow.down.circle.fill")
+                                    .foregroundColor(Color(hex: "#4CAF50"))
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Get Certificate from Server")
+                                        .foregroundColor(.primary)
+                                    Text("Use username/password to enroll")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+
+                        // Option 2: Import certificate files
+                        Button(action: {
+                            showCertificateList = true
+                        }) {
+                            HStack {
+                                Image(systemName: "doc.badge.plus")
+                                    .foregroundColor(Color(hex: "#2196F3"))
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Import Certificate Files")
+                                        .foregroundColor(.primary)
+                                    Text("From .pem, .crt, .key, or .p12 files")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+
+                        // Option 3: Select from Keychain
+                        Button(action: {
+                            showCertificateList = true
+                        }) {
+                            HStack {
+                                Image(systemName: "key.fill")
+                                    .foregroundColor(Color(hex: "#FF9800"))
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Use Stored Certificate")
+                                        .foregroundColor(.primary)
+                                    Text("Select from previously saved certificates")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+
+                    // Show selected certificate info if one is configured
+                    if !certificateName.isEmpty {
+                        Section {
+                            HStack {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(Color(hex: "#4CAF50"))
+                                Text("Certificate configured: \(certificateName)")
+                                    .font(.caption)
+                                Spacer()
+                                Button("Change") {
+                                    certificateName = ""
+                                }
+                                .font(.caption)
+                                .foregroundColor(.blue)
+                            }
+                        }
                     }
                 }
 
@@ -1699,6 +1780,13 @@ struct ServerEditView: View {
                         dismiss()
                     }
                 }
+            }
+            .sheet(isPresented: $showEnrollmentDialog) {
+                CertificateEnrollmentView()
+            }
+            .sheet(isPresented: $showCertificateList) {
+                // TODO: Create CertificateListView for selecting stored certificates
+                Text("Certificate list coming soon")
             }
         }
     }
