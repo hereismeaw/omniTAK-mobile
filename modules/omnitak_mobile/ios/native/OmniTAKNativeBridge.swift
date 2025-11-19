@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import UIKit
+import UniformTypeIdentifiers
 
 // MARK: - C FFI Import
 
@@ -159,11 +161,15 @@ public class OmniTAKNativeBridge: NSObject {
     // Singleton instance for callback management
     private static var shared: OmniTAKNativeBridge?
 
-    // Certificate storage
+    // Certificate storage (in-memory cache + Keychain)
     private var certificates: [String: CertificateBundle] = [:]
+    private let keychainManager = CertificateKeychainManager()
 
     // Callback storage: connection_id -> callback closure
     private var callbacks: [UInt64: (String) -> Void] = [:]
+
+    // File picker completion handler
+    private var filePickerCompletion: (([String: Any]?) -> Void)?
 
     // Thread-safe access to callbacks
     private let callbackQueue = DispatchQueue(label: "com.engindearing.omnitak.callbacks")
@@ -175,6 +181,7 @@ public class OmniTAKNativeBridge: NSObject {
     public override init() {
         super.init()
         Self.shared = self
+        loadCertificatesFromKeychain()
         ensureInitialized()
     }
 
@@ -197,6 +204,11 @@ public class OmniTAKNativeBridge: NSObject {
                 print("[OmniTAK] Failed to initialize native library: \(result)")
             }
         }
+    }
+
+    private func loadCertificatesFromKeychain() {
+        certificates = keychainManager.loadAllCertificates()
+        print("[OmniTAK] Loaded \(certificates.count) certificates from Keychain")
     }
 
     // MARK: - Public API
@@ -394,10 +406,18 @@ public class OmniTAKNativeBridge: NSObject {
             serverInfo: nil
         )
 
+        // Store in memory cache
         certificates[certId] = bundle
 
-        print("[OmniTAK] Certificate imported: \(certId)")
-        completion(certId)
+        // Persist to Keychain
+        if keychainManager.saveCertificate(bundle, withId: certId) {
+            print("[OmniTAK] Certificate imported and saved to Keychain: \(certId)")
+            completion(certId)
+        } else {
+            print("[OmniTAK] Certificate imported but failed to save to Keychain: \(certId)")
+            // Still return the ID since it's in memory
+            completion(certId)
+        }
     }
 
     // MARK: - Certificate Enrollment
@@ -499,9 +519,16 @@ public class OmniTAKNativeBridge: NSObject {
                         )
                     )
 
+                    // Store in memory cache
                     self.certificates[certId] = bundle
 
-                    print("[OmniTAK] Enrollment successful: \(certId), server: \(serverHost):\(port)")
+                    // Persist to Keychain
+                    if self.keychainManager.saveCertificate(bundle, withId: certId) {
+                        print("[OmniTAK] Enrollment successful and saved to Keychain: \(certId), server: \(serverHost):\(port)")
+                    } else {
+                        print("[OmniTAK] Enrollment successful but failed to save to Keychain: \(certId)")
+                    }
+
                     success = true
                     completion(certId, nil)
                     break
@@ -560,7 +587,9 @@ public class OmniTAKNativeBridge: NSObject {
             }
 
             if self.certificates.removeValue(forKey: certificateId) != nil {
-                print("[OmniTAK] Certificate deleted: \(certificateId)")
+                // Also remove from Keychain
+                _ = self.keychainManager.deleteCertificate(withId: certificateId)
+                print("[OmniTAK] Certificate deleted from memory and Keychain: \(certificateId)")
                 completion(true)
             } else {
                 print("[OmniTAK] Certificate not found: \(certificateId)")
@@ -570,11 +599,58 @@ public class OmniTAKNativeBridge: NSObject {
     }
 
     @objc public func pickCertificateFile(fileType: String, completion: @escaping ([String: Any]?) -> Void) {
-        // This will need to present a UIDocumentPickerViewController
-        // For now, return nil - needs UI integration
-        DispatchQueue.main.async {
-            print("[OmniTAK] File picker not yet implemented for type: \(fileType)")
-            completion(nil)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {
+                completion(nil)
+                return
+            }
+
+            // Store completion handler for delegate callback
+            self.filePickerCompletion = completion
+
+            // Determine allowed file types
+            let documentTypes: [UTType]
+            switch fileType.lowercased() {
+            case "pem":
+                documentTypes = [UTType(filenameExtension: "pem") ?? .data,
+                                 UTType(filenameExtension: "crt") ?? .data,
+                                 UTType(filenameExtension: "cer") ?? .data,
+                                 UTType(filenameExtension: "key") ?? .data]
+            case "p12", "pkcs12":
+                documentTypes = [UTType(filenameExtension: "p12") ?? .data,
+                                 UTType(filenameExtension: "pfx") ?? .data]
+            default:
+                // Allow all certificate-related files
+                documentTypes = [UTType(filenameExtension: "pem") ?? .data,
+                                 UTType(filenameExtension: "crt") ?? .data,
+                                 UTType(filenameExtension: "cer") ?? .data,
+                                 UTType(filenameExtension: "key") ?? .data,
+                                 UTType(filenameExtension: "p12") ?? .data,
+                                 UTType(filenameExtension: "pfx") ?? .data]
+            }
+
+            // Create document picker
+            let documentPicker = UIDocumentPickerViewController(forOpeningContentTypes: documentTypes, asCopy: true)
+            documentPicker.delegate = self
+            documentPicker.allowsMultipleSelection = false
+            documentPicker.shouldShowFileExtensions = true
+
+            // Get root view controller and present
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let rootViewController = windowScene.windows.first?.rootViewController {
+
+                // Find the topmost view controller
+                var topController = rootViewController
+                while let presented = topController.presentedViewController {
+                    topController = presented
+                }
+
+                topController.present(documentPicker, animated: true, completion: nil)
+                print("[OmniTAK] Presenting document picker for type: \(fileType)")
+            } else {
+                print("[OmniTAK] Failed to get root view controller")
+                completion(nil)
+            }
         }
     }
 
@@ -621,6 +697,62 @@ public class OmniTAKNativeBridge: NSObject {
             validUntil: oneYearLater
         )
     }
+
+// MARK: - UIDocumentPickerDelegate
+
+extension OmniTAKNativeBridge: UIDocumentPickerDelegate {
+
+    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        guard let url = urls.first else {
+            filePickerCompletion?(nil)
+            filePickerCompletion = nil
+            return
+        }
+
+        // Start accessing the security-scoped resource
+        guard url.startAccessingSecurityScopedResource() else {
+            print("[OmniTAK] Failed to access security-scoped resource: \(url)")
+            filePickerCompletion?(nil)
+            filePickerCompletion = nil
+            return
+        }
+
+        defer {
+            url.stopAccessingSecurityScopedResource()
+        }
+
+        do {
+            // Read file contents
+            let data = try Data(contentsOf: url)
+            let content = String(data: data, encoding: .utf8) ?? ""
+
+            // Get file metadata
+            let filename = url.lastPathComponent
+            let fileExtension = url.pathExtension
+
+            let result: [String: Any] = [
+                "filename": filename,
+                "content": content,
+                "type": fileExtension,
+                "size": data.count
+            ]
+
+            print("[OmniTAK] File selected: \(filename) (\(data.count) bytes)")
+            filePickerCompletion?(result)
+        } catch {
+            print("[OmniTAK] Failed to read file: \(error)")
+            filePickerCompletion?(nil)
+        }
+
+        filePickerCompletion = nil
+    }
+
+    public func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        print("[OmniTAK] Document picker cancelled")
+        filePickerCompletion?(nil)
+        filePickerCompletion = nil
+    }
+}
 
 // MARK: - Valdi Integration Helper
 
