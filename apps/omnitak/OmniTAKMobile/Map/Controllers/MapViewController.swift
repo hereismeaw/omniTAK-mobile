@@ -185,7 +185,7 @@ struct ATAKMapView: View {
                 onZoomOut: zoomOut
             )
             .padding(.horizontal, 8)
-            .padding(.bottom, isCursorModeActive ? 160 : 8)
+            .padding(.bottom, isCursorModeActive ? 240 : 140)
 
             if showQuickActionToolbar && !isCursorModeActive {
                 QuickActionToolbar(
@@ -464,8 +464,8 @@ struct ATAKMapView: View {
             loadingScreen
             radialMenu
             cursorModeOverlay
-            overlaySettingsButton
-            overlaySettingsPanel
+            // overlaySettingsButton - Removed per user request
+            // overlaySettingsPanel - Removed per user request
             mapCenterDisplay
         }
     }
@@ -783,23 +783,15 @@ struct ATAKMapView: View {
                 }
             }
             .onChange(of: locationManager.location?.coordinate.latitude) { _ in
-                // Update map region to follow user if in follow mode
+                // Update map region to follow user if in follow mode (no animation)
                 if trackingMode == .follow, let location = locationManager.location {
-                    DispatchQueue.main.async {
-                        withAnimation(.linear(duration: 0.3)) {
-                            mapRegion.center = location.coordinate
-                        }
-                    }
+                    mapRegion.center = location.coordinate
                 }
             }
             .onChange(of: locationManager.location?.coordinate.longitude) { _ in
-                // Update map region to follow user if in follow mode
+                // Update map region to follow user if in follow mode (no animation)
                 if trackingMode == .follow, let location = locationManager.location {
-                    DispatchQueue.main.async {
-                        withAnimation(.linear(duration: 0.3)) {
-                            mapRegion.center = location.coordinate
-                        }
-                    }
+                    mapRegion.center = location.coordinate
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: .radialMenuCustomAction)) { notification in
@@ -969,20 +961,18 @@ struct ATAKMapView: View {
     }
 
     private func zoomIn() {
-        withAnimation {
-            mapRegion.span.latitudeDelta = max(mapRegion.span.latitudeDelta / 2, 0.001)
-            mapRegion.span.longitudeDelta = max(mapRegion.span.longitudeDelta / 2, 0.001)
-        }
+        // Zoom in by halving the span - no animation for instant response
+        mapRegion.span.latitudeDelta = max(mapRegion.span.latitudeDelta / 2, 0.001)
+        mapRegion.span.longitudeDelta = max(mapRegion.span.longitudeDelta / 2, 0.001)
         #if DEBUG
         print("🔍 Zoom in: \(mapRegion.span.latitudeDelta)")
         #endif
     }
 
     private func zoomOut() {
-        withAnimation {
-            mapRegion.span.latitudeDelta = min(mapRegion.span.latitudeDelta * 2, 180)
-            mapRegion.span.longitudeDelta = min(mapRegion.span.longitudeDelta * 2, 180)
-        }
+        // Zoom out by doubling the span - no animation for instant response
+        mapRegion.span.latitudeDelta = min(mapRegion.span.latitudeDelta * 2, 180)
+        mapRegion.span.longitudeDelta = min(mapRegion.span.longitudeDelta * 2, 180)
         #if DEBUG
         print("🔍 Zoom out: \(mapRegion.span.latitudeDelta)")
         #endif
@@ -2062,18 +2052,23 @@ struct TacticalMapView: UIViewRepresentable {
         // Configure overlay coordinator with map view
         overlayCoordinator.configure(with: mapView)
 
-        // Configure gesture permissions based on map state
-        mapView.isScrollEnabled = mapStateManager.allowsPanning
-        mapView.isZoomEnabled = mapStateManager.allowsZooming
-        mapView.isRotateEnabled = mapStateManager.allowsRotation
+        // Enable all gestures - ensure map is fully interactive
+        mapView.isScrollEnabled = true   // Always allow panning
+        mapView.isZoomEnabled = true     // Always allow zooming
+        mapView.isRotateEnabled = true   // Always allow rotation
+        mapView.isPitchEnabled = false   // Disable 3D pitch for simplicity
+        mapView.isUserInteractionEnabled = true  // Ensure touch works
 
-        // Add tap gesture recognizer
+        // Add tap gesture recognizer - configure to not block pan gestures
         let tapGesture = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleMapTap(_:)))
+        tapGesture.cancelsTouchesInView = false  // Allow pan gestures to work
+        tapGesture.delaysTouchesBegan = false    // Don't delay touch events
         mapView.addGestureRecognizer(tapGesture)
 
         // Add long-press gesture for radial menu
         let longPressGesture = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleLongPress(_:)))
         longPressGesture.minimumPressDuration = 0.5
+        longPressGesture.cancelsTouchesInView = false  // Allow pan gestures to work
         mapView.addGestureRecognizer(longPressGesture)
 
         return mapView
@@ -2091,10 +2086,17 @@ struct TacticalMapView: UIViewRepresentable {
 
         // Update region (only if not currently being manipulated by user)
         if !context.coordinator.isUserInteracting {
-            context.coordinator.isProgrammaticUpdate = true
-            mapView.setRegion(region, animated: true)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                context.coordinator.isProgrammaticUpdate = false
+            // Only update if region has actually changed (avoid unnecessary resets)
+            let currentRegion = mapView.region
+            let centerChanged = abs(currentRegion.center.latitude - region.center.latitude) > 0.00001 ||
+                               abs(currentRegion.center.longitude - region.center.longitude) > 0.00001
+            let spanChanged = abs(currentRegion.span.latitudeDelta - region.span.latitudeDelta) > 0.00001 ||
+                             abs(currentRegion.span.longitudeDelta - region.span.longitudeDelta) > 0.00001
+
+            if centerChanged || spanChanged {
+                context.coordinator.isProgrammaticUpdate = true
+                mapView.setRegion(region, animated: false)  // No animation to prevent bounce
+                // Note: isProgrammaticUpdate is reset in regionDidChangeAnimated
             }
         }
 
@@ -2114,11 +2116,6 @@ struct TacticalMapView: UIViewRepresentable {
 
         // Update overlay coordinator's visible region for performance optimizations
         overlayCoordinator.updateVisibleOverlays(in: region)
-
-        // Update map interaction permissions from map state manager
-        mapView.isScrollEnabled = mapStateManager.allowsPanning
-        mapView.isZoomEnabled = mapStateManager.allowsZooming
-        mapView.isRotateEnabled = mapStateManager.allowsRotation
     }
 
     func makeCoordinator() -> Coordinator {
@@ -2573,24 +2570,21 @@ struct TacticalMapView: UIViewRepresentable {
             // If this is NOT a programmatic update, it's a user gesture
             if !isProgrammaticUpdate {
                 isUserInteracting = true
-
-                // Disable follow mode when user manually pans
-                if parent.trackingMode == .follow {
-                    DispatchQueue.main.async {
-                        self.parent.trackingMode = .none
-                        #if DEBUG
-                        print("🔓 GPS follow mode disabled - user panned map")
-                        #endif
-                    }
-                }
             }
         }
 
         func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+            // Reset programmatic flag
+            isProgrammaticUpdate = false
+
+            // Always sync region back to SwiftUI to keep state consistent
+            // The isUserInteracting flag in updateUIView prevents feedback loops
             DispatchQueue.main.async {
                 self.parent.region = mapView.region
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+
+            // Reset user interaction flag after a short delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.isUserInteracting = false
             }
 

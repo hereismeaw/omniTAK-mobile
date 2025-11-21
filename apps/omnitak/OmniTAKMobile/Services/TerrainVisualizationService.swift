@@ -340,7 +340,7 @@ class TerrainVisualizationService: NSObject, ObservableObject {
     // MARK: - "Look At" Functionality
 
     func lookAt(coordinate: CLLocationCoordinate2D, fromDistance: CLLocationDistance? = nil, withPitch: CGFloat? = nil) {
-        guard let mapView = mapView else { return }
+        guard mapView != nil else { return }
 
         let distance = fromDistance ?? cameraState.distance
         let pitch = withPitch ?? (currentMode == .standard2D ? 0 : 45)
