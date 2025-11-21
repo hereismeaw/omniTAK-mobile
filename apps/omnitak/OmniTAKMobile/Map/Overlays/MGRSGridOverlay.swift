@@ -89,7 +89,7 @@ class MGRSGridRenderer: MKOverlayRenderer {
     // MARK: - Drawing
 
     override func draw(_ mapRect: MKMapRect, zoomScale: MKZoomScale, in context: CGContext) {
-        let visibleRect = self.rect(for: mapRect)
+        let _ = self.rect(for: mapRect)
 
         // Update grid spacing based on zoom level
         let zoomLevel = calculateZoomLevel(zoomScale: zoomScale)
@@ -261,7 +261,7 @@ class MGRSGridRenderer: MKOverlayRenderer {
         let brZone = Int((bottomRight.longitude + 180) / 6) + 1
 
         for zone in tlZone...brZone {
-            let zoneCenterLon = Double((zone - 1) * 6 - 180 + 3)
+            let _ = Double((zone - 1) * 6 - 180 + 3)
             let zoneLeftLon = Double((zone - 1) * 6 - 180)
             let zoneRightLon = zoneLeftLon + 6
 

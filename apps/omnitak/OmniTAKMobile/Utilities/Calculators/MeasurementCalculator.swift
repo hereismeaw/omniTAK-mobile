@@ -102,7 +102,7 @@ class MeasurementCalculator {
     static func finalBearing(from: CLLocationCoordinate2D, to: CLLocationCoordinate2D) -> Double {
         // Final bearing is the reverse of the initial bearing from destination to origin
         let reverseBearing = bearing(from: to, to: from)
-        var finalBearing = (reverseBearing + 180.0).truncatingRemainder(dividingBy: 360.0)
+        let finalBearing = (reverseBearing + 180.0).truncatingRemainder(dividingBy: 360.0)
         return finalBearing
     }
 

@@ -280,7 +280,7 @@ class RangeBearingService: ObservableObject {
         let y = sin(dLon) * cos(lat2)
         let x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon)
         let bearingRadians = atan2(y, x)
-        var bearingDegrees = bearingRadians.radiansToDegrees
+        let bearingDegrees = bearingRadians.radiansToDegrees
 
         return (bearingDegrees + 360).truncatingRemainder(dividingBy: 360)
     }
@@ -288,7 +288,7 @@ class RangeBearingService: ObservableObject {
     /// Calculate magnetic bearing between two points
     func calculateMagneticBearing(from: CLLocationCoordinate2D, to: CLLocationCoordinate2D) -> Double {
         let trueBearing = calculateTrueBearing(from: from, to: to)
-        var magBearing = trueBearing - configuration.magneticDeclination
+        let magBearing = trueBearing - configuration.magneticDeclination
         return (magBearing + 360).truncatingRemainder(dividingBy: 360)
     }
 
@@ -304,7 +304,7 @@ class RangeBearingService: ObservableObject {
     /// Calculate grid bearing with convergence correction
     func calculateGridBearing(trueBearing: Double, gridConvergence: Double = 0.0) -> Double {
         // Grid bearing = True bearing - Grid convergence
-        var gridBearing = trueBearing - gridConvergence
+        let gridBearing = trueBearing - gridConvergence
         return (gridBearing + 360).truncatingRemainder(dividingBy: 360)
     }
 

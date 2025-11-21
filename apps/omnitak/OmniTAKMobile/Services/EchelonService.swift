@@ -50,7 +50,7 @@ class EchelonService: ObservableObject {
     /// Add a new unit to the hierarchy
     @discardableResult
     func addUnit(_ unit: MilitaryUnit) -> UUID {
-        var newUnit = unit
+        let newUnit = unit
 
         // Add to parent if specified
         if let parentId = unit.parentId, var parent = units[parentId] {
@@ -525,7 +525,7 @@ class EchelonService: ObservableObject {
             commander: "LTC Robert Davis"
         )
 
-        let battalion2Id = createUnit(
+        let _ = createUnit(
             name: "2nd Battalion, 16th Infantry",
             shortName: "2-16 IN",
             echelon: .battalion,
@@ -534,7 +534,7 @@ class EchelonService: ObservableObject {
             commander: "LTC Emily Taylor"
         )
 
-        let armorBattalionId = createUnit(
+        let _ = createUnit(
             name: "1st Battalion, 63rd Armor",
             shortName: "1-63 AR",
             echelon: .battalion,

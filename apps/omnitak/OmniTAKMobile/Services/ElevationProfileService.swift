@@ -146,7 +146,7 @@ class ElevationProfileService: NSObject, ObservableObject {
         let request = ElevationProfileRequest(
             coordinates: coordinates,
             samplingInterval: samplingInterval,
-            name: route.name ?? "Route Profile"
+            name: route.name
         )
 
         return try await generateProfile(for: request)

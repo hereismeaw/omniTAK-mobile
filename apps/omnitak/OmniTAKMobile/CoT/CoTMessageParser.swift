@@ -113,8 +113,8 @@ class CoTMessageParser {
 
         // Extract timestamps
         let time = extractTimestamp("time", from: xml) ?? Date()
-        let start = extractTimestamp("start", from: xml) ?? time
-        let stale = extractTimestamp("stale", from: xml) ?? time.addingTimeInterval(3600)
+        let _ = extractTimestamp("start", from: xml) ?? time
+        let _ = extractTimestamp("stale", from: xml) ?? time.addingTimeInterval(3600)
 
         // Extract detail information
         let detail = extractDetail(from: xml)
@@ -139,7 +139,7 @@ class CoTMessageParser {
 
     static func parseEmergencyAlert(xml: String) -> EmergencyAlert? {
         guard let uid = extractAttribute("uid", from: xml),
-              let typeStr = extractAttribute("type", from: xml),
+              let _ = extractAttribute("type", from: xml),
               let point = extractPoint(from: xml) else {
             return nil
         }

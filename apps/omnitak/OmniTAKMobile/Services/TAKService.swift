@@ -72,7 +72,7 @@ class DirectTCPSender {
                 #if DEBUG
                 print("⚠️  WARNING: Allowing legacy TLS 1.0+ (security risk)")
                 #endif
-                sec_protocol_options_set_min_tls_protocol_version(secOptions, .TLSv10)
+                sec_protocol_options_set_min_tls_protocol_version(secOptions, tls_protocol_version_t(rawValue: 769)!) // TLS 1.0
             } else {
                 // TLS 1.2 is minimum for secure legacy TAK server compatibility
                 sec_protocol_options_set_min_tls_protocol_version(secOptions, .TLSv12)

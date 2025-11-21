@@ -367,8 +367,6 @@ class ArcGISFeatureService: ObservableObject {
 
     /// Remove expired cache entries
     func pruneExpiredCache() {
-        let now = Date()
-
         featureCache = featureCache.filter { _, cached in
             !cached.isExpired
         }

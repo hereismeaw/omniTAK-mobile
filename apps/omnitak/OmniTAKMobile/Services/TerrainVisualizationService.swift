@@ -241,7 +241,7 @@ class TerrainVisualizationService: NSObject, ObservableObject {
     }
 
     func transitionTo2D() {
-        guard let mapView = mapView else { return }
+        guard mapView != nil else { return }
 
         let camera = MKMapCamera()
         camera.centerCoordinate = cameraState.centerCoordinate
@@ -254,7 +254,7 @@ class TerrainVisualizationService: NSObject, ObservableObject {
     }
 
     func transitionTo3D() {
-        guard let mapView = mapView else { return }
+        guard mapView != nil else { return }
 
         let camera = MKMapCamera()
         camera.centerCoordinate = cameraState.centerCoordinate
@@ -359,7 +359,7 @@ class TerrainVisualizationService: NSObject, ObservableObject {
     }
 
     func lookAt(coordinate: CLLocationCoordinate2D, fromEyeCoordinate eyeCoordinate: CLLocationCoordinate2D, eyeAltitude: CLLocationDistance) {
-        guard let mapView = mapView else { return }
+        guard mapView != nil else { return }
 
         let camera = MKMapCamera(
             lookingAtCenter: coordinate,

@@ -281,7 +281,7 @@ class MGRSConverter {
         let minNorthing = getMinNorthing(bandNumber)
 
         // Calculate northing
-        var northing100km = Double(row) * 100000.0
+        let northing100km = Double(row) * 100000.0
         let northingRemainder = Double(mgrs.northing) * multiplier + multiplier / 2.0
         var northing = northing100km + northingRemainder
 

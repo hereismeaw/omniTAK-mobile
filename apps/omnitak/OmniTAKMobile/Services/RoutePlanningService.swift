@@ -119,7 +119,6 @@ class RoutePlanningService: NSObject, ObservableObject {
         let totalSegments = route.waypoints.count - 1
         var completedSegments = 0
         var allSegments: [RouteSegment] = []
-        var hasError = false
 
         // Calculate each segment
         for i in 0..<totalSegments {

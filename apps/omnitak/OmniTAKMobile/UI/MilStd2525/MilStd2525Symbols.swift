@@ -420,7 +420,7 @@ class MilStdCoTParser {
         var affiliation: MilStdAffiliation = .unknown
         var battleDimension: MilStdBattleDimension = .ground
         var unitType: MilStdUnitType = .unknown
-        var status: MilStdStatus = .present
+        let status: MilStdStatus = .present
         var echelon: MilStdEchelon? = nil
         var modifiers = MilStdModifiers()
 

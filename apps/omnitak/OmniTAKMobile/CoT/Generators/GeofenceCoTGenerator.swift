@@ -111,7 +111,7 @@ class GeofenceCoTGenerator {
                 <shape>
         """
 
-        if geofence.type == .circle, let center = geofence.center, let radius = geofence.radius {
+        if geofence.type == .circle, let _ = geofence.center, let radius = geofence.radius {
             xml += """
                         <ellipse major="\(radius)" minor="\(radius)" angle="0"/>
             """

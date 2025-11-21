@@ -96,7 +96,7 @@ class TrackPolylineRenderer: MKPolylineRenderer {
     }
 
     private func drawDirectionIndicators(in context: CGContext, zoomScale: MKZoomScale) {
-        guard let polyline = polyline as? MKPolyline else { return }
+        guard let polyline = polyline else { return }
         guard polyline.pointCount >= 2 else { return }
 
         let points = polyline.points()
@@ -151,7 +151,7 @@ class TrackPolylineRenderer: MKPolylineRenderer {
     }
 
     private func drawBreadcrumbDots(in context: CGContext, zoomScale: MKZoomScale) {
-        guard let polyline = polyline as? MKPolyline else { return }
+        guard let polyline = polyline else { return }
 
         let points = polyline.points()
         let pointCount = polyline.pointCount
@@ -180,7 +180,7 @@ class TrackPolylineRenderer: MKPolylineRenderer {
     }
 
     private func drawStartEndMarkers(in context: CGContext, zoomScale: MKZoomScale) {
-        guard let polyline = polyline as? MKPolyline else { return }
+        guard let polyline = polyline else { return }
         guard polyline.pointCount >= 2 else { return }
 
         let points = polyline.points()

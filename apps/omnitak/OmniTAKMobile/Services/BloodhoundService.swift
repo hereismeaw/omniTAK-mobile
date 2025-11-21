@@ -265,7 +265,7 @@ class BloodhoundService: ObservableObject {
     }
 
     private func processEnhancedMarkers(_ markers: [String: EnhancedCoTMarker]) {
-        for (uid, marker) in markers {
+        for (_, marker) in markers {
             // Only track friendly forces
             guard marker.affiliation == .friendly || marker.affiliation == .assumedFriend else {
                 continue

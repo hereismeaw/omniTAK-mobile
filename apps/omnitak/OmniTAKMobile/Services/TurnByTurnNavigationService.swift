@@ -569,7 +569,7 @@ class TurnByTurnNavigationService: NSObject, ObservableObject {
     private func parseMKRouteSteps(_ mkRoute: MKRoute) -> [NavigationInstruction] {
         var instructions: [NavigationInstruction] = []
 
-        for (index, step) in mkRoute.steps.enumerated() {
+        for (_, step) in mkRoute.steps.enumerated() {
             guard !step.instructions.isEmpty else { continue }
 
             let maneuverType = determineManeuverType(from: step.instructions)

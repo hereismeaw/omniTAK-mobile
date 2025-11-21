@@ -33,7 +33,7 @@ class VideoStreamService: ObservableObject {
     // MARK: - Feed Management
 
     func addFeed(_ feed: VideoFeed) {
-        var newFeed = feed
+        let newFeed = feed
 
         // Validate URL before adding
         guard newFeed.isValidURL else {

@@ -328,7 +328,7 @@ struct TeamCreatorView: View {
     }
 
     private func createTeam() {
-        teamService.createTeam(name: teamName, color: selectedColor)
+        let _ = teamService.createTeam(name: teamName, color: selectedColor)
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
         presentationMode.wrappedValue.dismiss()

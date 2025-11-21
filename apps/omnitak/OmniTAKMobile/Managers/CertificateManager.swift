@@ -295,12 +295,12 @@ class CertificateManager: ObservableObject {
         // Now we should be at Validity (SEQUENCE)
         guard data.count > offset && data[offset] == 0x30 else { return nil }
         offset += 1
-        let (validityLength, validityLengthSize) = parseDERLength(data, offset: offset)
+        let (_, validityLengthSize) = parseDERLength(data, offset: offset)
         offset += validityLengthSize
 
         // Skip notBefore (UTCTime 0x17 or GeneralizedTime 0x18)
         if data.count > offset && (data[offset] == 0x17 || data[offset] == 0x18) {
-            let timeType = data[offset]
+            let _ = data[offset]
             offset += 1
             let (notBeforeLength, notBeforeLengthSize) = parseDERLength(data, offset: offset)
             offset += notBeforeLengthSize + notBeforeLength

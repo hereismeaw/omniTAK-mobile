@@ -99,7 +99,7 @@ class KMLOverlayManager: ObservableObject {
 
             // Parse KML
             let parser = KMLParser(fileName: fileName)
-            var document = try parser.parse(data: kmlData)
+            let document = try parser.parse(data: kmlData)
 
             // Save original KML data
             let savedURL = documentsDirectory.appendingPathComponent("\(document.id.uuidString).kml")
