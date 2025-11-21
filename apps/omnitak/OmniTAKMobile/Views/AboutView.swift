@@ -24,7 +24,7 @@ struct AboutView: View {
                             .font(.system(size: 32, weight: .bold))
                             .foregroundColor(Color(hex: "#FFFC00"))
 
-                        Text("Version 1.3.2 (Build 2)")
+                        Text("Version 1.3.4 (Build 3)")
                             .font(.system(size: 14))
                             .foregroundColor(.gray)
                     }
