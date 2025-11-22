@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 
+@MainActor
 class ArcGISPortalService: ObservableObject {
     static let shared = ArcGISPortalService()
 
@@ -30,8 +31,8 @@ class ArcGISPortalService: ObservableObject {
     private let session: URLSession
 
     // Default portal URLs
-    static let arcGISOnlineURL = "https://www.arcgis.com"
-    static let arcGISOnlineSharingURL = "https://www.arcgis.com/sharing/rest"
+    nonisolated static let arcGISOnlineURL = "https://www.arcgis.com"
+    nonisolated static let arcGISOnlineSharingURL = "https://www.arcgis.com/sharing/rest"
 
     private init() {
         // Configure URL session with timeout

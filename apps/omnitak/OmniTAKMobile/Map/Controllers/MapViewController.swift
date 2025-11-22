@@ -14,6 +14,7 @@ struct ATAKMapView: View {
     @StateObject private var trackRecordingService = TrackRecordingService()
     @StateObject private var overlayCoordinator = MapOverlayCoordinator()
     @StateObject private var mapStateManager = MapStateManager()
+    @StateObject private var measurementManager = MeasurementManager()
 
     @State private var mapRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 38.8977, longitude: -77.0365), // Default: DC
@@ -51,6 +52,7 @@ struct ATAKMapView: View {
     @State private var showEchelonHierarchy = false
     @State private var showMissionSync = false
     @State private var showMeshtastic = false
+    @State private var showMeasurement = false
 
     // Position broadcasting service
     @ObservedObject private var positionBroadcastService = PositionBroadcastService.shared
@@ -136,6 +138,7 @@ struct ATAKMapView: View {
             radialMenuCoordinator: radialMenuCoordinator,
             overlayCoordinator: overlayCoordinator,
             mapStateManager: mapStateManager,
+            measurementManager: measurementManager,
             onMapTap: handleMapTap
         )
         .ignoresSafeArea()
@@ -198,7 +201,7 @@ struct ATAKMapView: View {
                         dropMarkerAtLocation(coordinate: coordinate, affiliation: .friendly)
                     },
                     onToggleMeasure: {
-                        print("Measure mode toggled")
+                        showMeasurement = true
                     }
                 )
                 .padding(.horizontal, 16)
@@ -724,6 +727,9 @@ struct ATAKMapView: View {
             .sheet(isPresented: $showMissionSync) {
                 MissionPackageSyncView()
             }
+            .sheet(isPresented: $showMeasurement) {
+                MeasurementToolView(manager: measurementManager, isPresented: $showMeasurement)
+            }
     }
 
     private var errorOverlays: some View {
@@ -817,9 +823,16 @@ struct ATAKMapView: View {
             }
     }
 
-    // MARK: - Drawing Handler
+    // MARK: - Drawing and Measurement Handlers
 
     private func handleMapTap(at coordinate: CLLocationCoordinate2D) {
+        // Handle measurement tool taps first
+        if measurementManager.isActive {
+            measurementManager.handleMapTap(at: coordinate)
+            return
+        }
+
+        // Then handle drawing tool taps
         if drawingManager.isDrawingActive {
             drawingManager.handleMapTap(at: coordinate)
         }
@@ -2037,6 +2050,7 @@ struct TacticalMapView: UIViewRepresentable {
     @ObservedObject var radialMenuCoordinator: RadialMenuMapCoordinator
     @ObservedObject var overlayCoordinator: MapOverlayCoordinator
     @ObservedObject var mapStateManager: MapStateManager
+    @ObservedObject var measurementManager: MeasurementManager
     let onMapTap: (CLLocationCoordinate2D) -> Void
 
     func makeUIView(context: Context) -> MKMapView {
@@ -2197,6 +2211,12 @@ struct TacticalMapView: UIViewRepresentable {
             let tempAnnotations = drawingManager.getTemporaryAnnotations()
             mapView.addAnnotations(tempAnnotations)
         }
+
+        // Add temporary measurement point annotations
+        if measurementManager.isActive {
+            let tempAnnotations = measurementManager.getTemporaryAnnotations()
+            mapView.addAnnotations(tempAnnotations)
+        }
     }
 
     private func calculateCentroid(coordinates: [CLLocationCoordinate2D]) -> CLLocationCoordinate2D? {
@@ -2227,6 +2247,17 @@ struct TacticalMapView: UIViewRepresentable {
         // Add temporary overlay if drawing
         if let tempOverlay = drawingManager.getTemporaryOverlay() {
             mapView.addOverlay(tempOverlay)
+        }
+
+        // Add measurement overlays
+        if let measurementOverlay = measurementManager.getTemporaryOverlay() {
+            mapView.addOverlay(measurementOverlay)
+        }
+
+        // Add range ring overlays
+        for ring in measurementManager.rangeRings {
+            let circle = MKCircle(center: ring.center, radius: ring.radiusMeters)
+            mapView.addOverlay(circle)
         }
     }
 

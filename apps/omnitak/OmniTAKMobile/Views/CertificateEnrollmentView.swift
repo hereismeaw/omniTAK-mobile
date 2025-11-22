@@ -777,6 +777,8 @@ class QRScannerViewModel: NSObject, ObservableObject, AVCaptureMetadataOutputObj
                     self?.statusMessage = "Camera in use by another app"
                 case .videoDeviceNotAvailableWithMultipleForegroundApps:
                     self?.statusMessage = "Camera unavailable (multitasking)"
+                case .videoDeviceNotAvailableDueToSystemPressure:
+                    self?.statusMessage = "Camera unavailable (system pressure)"
                 @unknown default:
                     self?.statusMessage = "Camera temporarily unavailable"
                 }

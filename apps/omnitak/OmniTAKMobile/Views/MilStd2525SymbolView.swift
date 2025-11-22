@@ -158,13 +158,17 @@ struct AnyShape: Shape {
     private let pathClosure: (CGRect) -> Path
 
     init<S: Shape>(_ shape: S) {
-        pathClosure = shape.path(in:)
+        pathClosure = { rect in
+            shape.path(in: rect)
+        }
     }
 
     func path(in rect: CGRect) -> Path {
         pathClosure(rect)
     }
 }
+
+extension AnyShape: @unchecked Sendable {}
 
 // MARK: - Custom Shapes
 

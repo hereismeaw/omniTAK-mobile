@@ -329,7 +329,9 @@ class OfflineTileCacheManager: ObservableObject {
 
         var files: [(URL, Date, Int64)] = []
 
-        for case let fileURL as URL in enumerator {
+        // Convert enumerator to array to avoid async iteration issues
+        let allObjects = enumerator.allObjects
+        for case let fileURL as URL in allObjects {
             guard let resourceValues = try? fileURL.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey]),
                   let modDate = resourceValues.contentModificationDate,
                   let size = resourceValues.fileSize else {
@@ -343,20 +345,22 @@ class OfflineTileCacheManager: ObservableObject {
         files.sort { $0.1 < $1.1 }
 
         // Remove until under limit
-        var currentSize = cacheSize
+        let startSize = cacheSize
         let targetSize = maxCacheSize * 80 / 100 // 80% of max
 
+        var removedSize: Int64 = 0
         for (url, _, size) in files {
-            if currentSize <= targetSize {
+            if (startSize - removedSize) <= targetSize {
                 break
             }
 
             try? fileManager.removeItem(at: url)
-            currentSize -= size
+            removedSize += size
         }
 
+        let newSize = startSize - removedSize
         await MainActor.run {
-            cacheSize = currentSize
+            cacheSize = newSize
         }
     }
 
@@ -420,7 +424,7 @@ enum TileCacheError: LocalizedError {
 
 // MARK: - MKTileOverlayPath Extension
 
-extension MKTileOverlayPath: Hashable {
+extension MKTileOverlayPath: @retroactive Hashable, @retroactive Equatable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(x)
         hasher.combine(y)

@@ -10,6 +10,7 @@ import Combine
 import CoreLocation
 import MapKit
 
+@MainActor
 class ArcGISFeatureService: ObservableObject {
     static let shared = ArcGISFeatureService()
 
